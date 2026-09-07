@@ -10,3 +10,7 @@ third_party/ramulator2/build/
 
 # Simulation results
 RESULTS/
+
+# Generated Ramulator2 YAML configs (regenerate via SCRIPTS/ramulator2_config.py)
+src/*.yaml
+src/*.yml
