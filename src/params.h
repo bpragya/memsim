@@ -62,6 +62,8 @@ uns64       MEM_RSRV_MB      = 0; // reserving memory for metadata (e.g. CRA)
 
 uns64       RAND_SEED       = 1234;
 
+char        RAMULATOR_CONFIG_PATH[1024] = "ramulator2_config.yaml";
+
 uns64       cycle;
 uns64       last_printdot_cycle;
 char        addr_trace_filename[256][1024];
@@ -84,6 +86,7 @@ void die_usage() {
     printf("               -l3assoc     <num>    Set L3  Cache assoc <num> (Default: 16)\n");
     printf("               -l3perfect            Set L3  to 100 percent hit rate(Default:off)\n");
     printf("               -memclosepage         Set DRAM to close page (Default:off)\n");
+    printf("               -ramulatorconfig <path> Path to Ramulator2 YAML config (Default: ramulator2_config.yaml)\n");
 
     exit(0);
 }
@@ -352,8 +355,15 @@ void read_params(int argc, char **argv){
 	    }
 
 	    else if (!strcmp(argv[ii], "-rfmraammt")) {
-		if (ii < argc - 1) {		  
+		if (ii < argc - 1) {
 		    RFM_RAAMMT = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-ramulatorconfig")) {
+		if (ii < argc - 1) {
+		    strcpy(RAMULATOR_CONFIG_PATH, argv[ii+1]);
 		    ii += 1;
 		}
 	    }

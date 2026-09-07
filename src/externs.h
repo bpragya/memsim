@@ -53,6 +53,8 @@ extern uns64       tRFM;
 extern uns64       RUBIX_CIPHER_BITS;
 extern uns64       DRAM_BANKGROUPS;
 
+extern char        RAMULATOR_CONFIG_PATH[1024];
+
 
 // these are non-param global variables
 extern int         num_threads;
