@@ -1,0 +1,163 @@
+=== blender_17 ===
+  CORE_00_CYCLES       original=367693       ramulator2=367332       diff=-0.10%
+  CORE_00_AVGDELAY     original=132.49       ramulator2=132.18       diff=-0.23%
+  CORE_00_IPC          original=2.720        ramulator2=2.722        diff=+0.07%
+  SYS_CYCLES           original=367693       ramulator2=367332       diff=-0.10%
+  AVG_CORE_CYCLES      original=367693       ramulator2=367332       diff=-0.10%
+
+=== bwaves_17 ===
+  CORE_00_CYCLES       original=1896020      ramulator2=829938       diff=-56.23%
+  CORE_00_AVGDELAY     original=394.73       ramulator2=152.73       diff=-61.31%
+  CORE_00_IPC          original=0.527        ramulator2=1.205        diff=+128.65%
+  SYS_CYCLES           original=1896020      ramulator2=829938       diff=-56.23%
+  AVG_CORE_CYCLES      original=1896020      ramulator2=829938       diff=-56.23%
+
+=== cactuBSSN_17 ===
+  CORE_00_CYCLES       original=511859       ramulator2=384974       diff=-24.79%
+  CORE_00_AVGDELAY     original=399.94       ramulator2=220.60       diff=-44.84%
+  CORE_00_IPC          original=1.954        ramulator2=2.598        diff=+32.96%
+  SYS_CYCLES           original=511859       ramulator2=384974       diff=-24.79%
+  AVG_CORE_CYCLES      original=511859       ramulator2=384974       diff=-24.79%
+
+=== cam4_17 ===
+  CORE_00_CYCLES       original=308564       ramulator2=297422       diff=-3.61%
+  CORE_00_AVGDELAY     original=130.93       ramulator2=117.13       diff=-10.54%
+  CORE_00_IPC          original=3.241        ramulator2=3.362        diff=+3.73%
+  SYS_CYCLES           original=308564       ramulator2=297422       diff=-3.61%
+  AVG_CORE_CYCLES      original=308564       ramulator2=297422       diff=-3.61%
+
+=== deepsjeng_17 ===
+  CORE_00_CYCLES       original=290250       ramulator2=296146       diff=+2.03%
+  CORE_00_AVGDELAY     original=134.09       ramulator2=146.86       diff=+9.52%
+  CORE_00_IPC          original=3.445        ramulator2=3.377        diff=-1.97%
+  SYS_CYCLES           original=290250       ramulator2=296146       diff=+2.03%
+  AVG_CORE_CYCLES      original=290250       ramulator2=296146       diff=+2.03%
+
+=== fotonik3d_17 ===
+  CORE_00_CYCLES       original=870960       ramulator2=747555       diff=-14.17%
+  CORE_00_AVGDELAY     original=133.61       ramulator2=119.91       diff=-10.25%
+  CORE_00_IPC          original=1.148        ramulator2=1.338        diff=+16.55%
+  SYS_CYCLES           original=870960       ramulator2=747555       diff=-14.17%
+  AVG_CORE_CYCLES      original=870960       ramulator2=747555       diff=-14.17%
+
+=== gcc_17 ===
+  CORE_00_CYCLES       original=318770       ramulator2=331921       diff=+4.13%
+  CORE_00_AVGDELAY     original=133.56       ramulator2=141.55       diff=+5.98%
+  CORE_00_IPC          original=3.137        ramulator2=3.013        diff=-3.95%
+  SYS_CYCLES           original=318770       ramulator2=331921       diff=+4.13%
+  AVG_CORE_CYCLES      original=318770       ramulator2=331921       diff=+4.13%
+
+=== imagick_17 ===
+  CORE_00_CYCLES       original=283332       ramulator2=274505       diff=-3.12%
+  CORE_00_AVGDELAY     original=77.35        ramulator2=92.94        diff=+20.16%
+  CORE_00_IPC          original=3.529        ramulator2=3.643        diff=+3.23%
+  SYS_CYCLES           original=283332       ramulator2=274505       diff=-3.12%
+  AVG_CORE_CYCLES      original=283332       ramulator2=274505       diff=-3.12%
+
+=== lbm_17 ===
+  CORE_00_CYCLES       original=586406       ramulator2=610621       diff=+4.13%
+  CORE_00_AVGDELAY     original=110.98       ramulator2=106.06       diff=-4.43%
+  CORE_00_IPC          original=1.705        ramulator2=1.638        diff=-3.93%
+  SYS_CYCLES           original=586406       ramulator2=610621       diff=+4.13%
+  AVG_CORE_CYCLES      original=586406       ramulator2=610621       diff=+4.13%
+
+=== leela_17 ===
+  CORE_00_CYCLES       original=291474       ramulator2=300519       diff=+3.10%
+  CORE_00_AVGDELAY     original=175.60       ramulator2=170.93       diff=-2.66%
+  CORE_00_IPC          original=3.431        ramulator2=3.328        diff=-3.00%
+  SYS_CYCLES           original=291474       ramulator2=300519       diff=+3.10%
+  AVG_CORE_CYCLES      original=291474       ramulator2=300519       diff=+3.10%
+
+=== mcf_17 ===
+  CORE_00_CYCLES       original=507531       ramulator2=456472       diff=-10.06%
+  CORE_00_AVGDELAY     original=148.12       ramulator2=119.69       diff=-19.19%
+  CORE_00_IPC          original=1.970        ramulator2=2.191        diff=+11.22%
+  SYS_CYCLES           original=507531       ramulator2=456472       diff=-10.06%
+  AVG_CORE_CYCLES      original=507531       ramulator2=456472       diff=-10.06%
+
+=== nab_17 ===
+  CORE_00_CYCLES       original=353702       ramulator2=326997       diff=-7.55%
+  CORE_00_AVGDELAY     original=99.46        ramulator2=104.80       diff=+5.37%
+  CORE_00_IPC          original=2.827        ramulator2=3.058        diff=+8.17%
+  SYS_CYCLES           original=353702       ramulator2=326997       diff=-7.55%
+  AVG_CORE_CYCLES      original=353702       ramulator2=326997       diff=-7.55%
+
+=== namd_17 ===
+  CORE_00_CYCLES       original=299624       ramulator2=293245       diff=-2.13%
+  CORE_00_AVGDELAY     original=121.70       ramulator2=127.04       diff=+4.39%
+  CORE_00_IPC          original=3.338        ramulator2=3.410        diff=+2.16%
+  SYS_CYCLES           original=299624       ramulator2=293245       diff=-2.13%
+  AVG_CORE_CYCLES      original=299624       ramulator2=293245       diff=-2.13%
+
+=== omnetpp_17 ===
+  CORE_00_CYCLES       original=487957       ramulator2=516987       diff=+5.95%
+  CORE_00_AVGDELAY     original=155.82       ramulator2=167.70       diff=+7.62%
+  CORE_00_IPC          original=2.049        ramulator2=1.934        diff=-5.61%
+  SYS_CYCLES           original=487957       ramulator2=516987       diff=+5.95%
+  AVG_CORE_CYCLES      original=487957       ramulator2=516987       diff=+5.95%
+
+=== parest_17 ===
+  CORE_00_CYCLES       original=647916       ramulator2=463890       diff=-28.40%
+  CORE_00_AVGDELAY     original=152.74       ramulator2=118.26       diff=-22.57%
+  CORE_00_IPC          original=1.543        ramulator2=2.156        diff=+39.73%
+  SYS_CYCLES           original=647916       ramulator2=463890       diff=-28.40%
+  AVG_CORE_CYCLES      original=647916       ramulator2=463890       diff=-28.40%
+
+=== perlbench_17 ===
+  CORE_00_CYCLES       original=254384       ramulator2=254292       diff=-0.04%
+  CORE_00_AVGDELAY     original=114.61       ramulator2=133.98       diff=+16.90%
+  CORE_00_IPC          original=3.931        ramulator2=3.932        diff=+0.03%
+  SYS_CYCLES           original=254384       ramulator2=254292       diff=-0.04%
+  AVG_CORE_CYCLES      original=254384       ramulator2=254292       diff=-0.04%
+
+=== povray_17 ===
+  CORE_00_CYCLES       original=283042       ramulator2=283383       diff=+0.12%
+  CORE_00_AVGDELAY     original=140.88       ramulator2=149.84       diff=+6.36%
+  CORE_00_IPC          original=3.533        ramulator2=3.529        diff=-0.11%
+  SYS_CYCLES           original=283042       ramulator2=283383       diff=+0.12%
+  AVG_CORE_CYCLES      original=283042       ramulator2=283383       diff=+0.12%
+
+=== roms_17 ===
+  CORE_00_CYCLES       original=704019       ramulator2=387767       diff=-44.92%
+  CORE_00_AVGDELAY     original=129.18       ramulator2=91.43        diff=-29.22%
+  CORE_00_IPC          original=1.420        ramulator2=2.579        diff=+81.62%
+  SYS_CYCLES           original=704019       ramulator2=387767       diff=-44.92%
+  AVG_CORE_CYCLES      original=704019       ramulator2=387767       diff=-44.92%
+
+=== wrf_17 ===
+  CORE_00_CYCLES       original=324554       ramulator2=346237       diff=+6.68%
+  CORE_00_AVGDELAY     original=87.36        ramulator2=111.31       diff=+27.42%
+  CORE_00_IPC          original=3.081        ramulator2=2.888        diff=-6.26%
+  SYS_CYCLES           original=324554       ramulator2=346237       diff=+6.68%
+  AVG_CORE_CYCLES      original=324554       ramulator2=346237       diff=+6.68%
+
+=== x264_17 ===
+  CORE_00_CYCLES       original=254833       ramulator2=254839       diff=+0.00%
+  CORE_00_AVGDELAY     original=140.55       ramulator2=129.71       diff=-7.71%
+  SYS_CYCLES           original=254833       ramulator2=254839       diff=+0.00%
+  AVG_CORE_CYCLES      original=254833       ramulator2=254839       diff=+0.00%
+
+=== xalancbmk_17 ===
+  CORE_00_CYCLES       original=308373       ramulator2=302756       diff=-1.82%
+  CORE_00_AVGDELAY     original=160.46       ramulator2=171.43       diff=+6.84%
+  CORE_00_IPC          original=3.243        ramulator2=3.303        diff=+1.85%
+  SYS_CYCLES           original=308373       ramulator2=302756       diff=-1.82%
+  AVG_CORE_CYCLES      original=308373       ramulator2=302756       diff=-1.82%
+
+=== xz_17 ===
+  CORE_00_CYCLES       original=440226       ramulator2=483185       diff=+9.76%
+  CORE_00_AVGDELAY     original=149.70       ramulator2=179.66       diff=+20.01%
+  CORE_00_IPC          original=2.272        ramulator2=2.070        diff=-8.89%
+  SYS_CYCLES           original=440226       ramulator2=483185       diff=+9.76%
+  AVG_CORE_CYCLES      original=440226       ramulator2=483185       diff=+9.76%
+
+Conclusion:
+Traces that have memory-latency dominated workload (program spends lot of time waiting 
+on memory accesses to complete) are bottlenecked by how fast DRAM responds
+
+Traces that have ~100% match:
+x264_17
+perlbench_17
+blender_17
+povray_17
+*These traces have low avg memory delay
