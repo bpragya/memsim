@@ -1,0 +1,44 @@
+Initialized OS for 8388608 pages
+Size: 32 GB Channels: 2 and BanksPerChannel: 32
+
+   0 M	(INST:     0 M,) 
+
+------------------------------------
+------  MEMSIM.V1.1  ----------
+------------------------------------
+
+CORE_00_ID           	 :  0
+CORE_00_TRACE        	 : TRACES/xalancbmk_17.mtf.gz
+CORE_00_INST         	 : 1000001
+CORE_00_CYCLES       	 : 308373
+CORE_00_ACCESS       	 : 27598
+CORE_00_MISS         	 : 4346
+CORE_00_QFULL        	 : 0
+CORE_00_APKI         	 : 27.60
+CORE_00_MPKI         	 : 4.35
+CORE_00_MISSRATE     	 : 15.75
+CORE_00_AVGDELAY     	 : 160.46
+CORE_00_SLEEP_CYCLES 	 : 0
+CORE_00_IPC          	 : 3.243
+
+L3CACHE_ACCESS       	 : 27598
+L3CACHE_MISS         	 : 4346
+L3CACHE_MISSRATE     	 : 15.748
+
+DRAM_ACT         	 : 3445
+DRAM_REQ         	 : 4346
+DRAM_RBHR        	 : 20.73
+DRAM_AVG_SDELAY  	 : 91.99
+DRAM_AVG_WDELAY  	 : 47.02
+DRAM_AVG_TDELAY  	 : 139.01
+DRAM_AVG_BUSDELAY	 : 61.00
+DRAM_NUM_TREFI   	 : 19
+DRAM_NUM_TREFW   	 : 0
+DRAM_RFM         	 : 0
+
+OS_PAGE_MISS       	 : 850
+
+SYS_CYCLES      	 : 308373
+AVG_CORE_CYCLES 	 : 308373
+
+

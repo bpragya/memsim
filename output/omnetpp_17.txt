@@ -1,0 +1,44 @@
+Initialized OS for 8388608 pages
+Size: 32 GB Channels: 2 and BanksPerChannel: 32
+
+   0 M	(INST:     0 M,) 
+
+------------------------------------
+------  MEMSIM.V1.1  ----------
+------------------------------------
+
+CORE_00_ID           	 :  0
+CORE_00_TRACE        	 : TRACES/omnetpp_17.mtf.gz
+CORE_00_INST         	 : 1000001
+CORE_00_CYCLES       	 : 487957
+CORE_00_ACCESS       	 : 20022
+CORE_00_MISS         	 : 12940
+CORE_00_QFULL        	 : 0
+CORE_00_APKI         	 : 20.02
+CORE_00_MPKI         	 : 12.94
+CORE_00_MISSRATE     	 : 64.63
+CORE_00_AVGDELAY     	 : 155.82
+CORE_00_SLEEP_CYCLES 	 : 0
+CORE_00_IPC          	 : 2.049
+
+L3CACHE_ACCESS       	 : 20022
+L3CACHE_MISS         	 : 12940
+L3CACHE_MISSRATE     	 : 64.629
+
+DRAM_ACT         	 : 11528
+DRAM_REQ         	 : 12940
+DRAM_RBHR        	 : 10.91
+DRAM_AVG_SDELAY  	 : 107.31
+DRAM_AVG_WDELAY  	 : 41.07
+DRAM_AVG_TDELAY  	 : 148.38
+DRAM_AVG_BUSDELAY	 : 61.00
+DRAM_NUM_TREFI   	 : 31
+DRAM_NUM_TREFW   	 : 0
+DRAM_RFM         	 : 0
+
+OS_PAGE_MISS       	 : 4002
+
+SYS_CYCLES      	 : 487957
+AVG_CORE_CYCLES 	 : 487957
+
+

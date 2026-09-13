@@ -1,0 +1,44 @@
+Initialized OS for 8388608 pages
+Size: 32 GB Channels: 2 and BanksPerChannel: 32
+
+   0 M	(INST:     0 M,) 
+
+------------------------------------
+------  MEMSIM.V1.1  ----------
+------------------------------------
+
+CORE_00_ID           	 :  0
+CORE_00_TRACE        	 : TRACES/blender_17.mtf.gz
+CORE_00_INST         	 : 1000001
+CORE_00_CYCLES       	 : 367693
+CORE_00_ACCESS       	 : 13930
+CORE_00_MISS         	 : 7022
+CORE_00_QFULL        	 : 0
+CORE_00_APKI         	 : 13.93
+CORE_00_MPKI         	 : 7.02
+CORE_00_MISSRATE     	 : 50.41
+CORE_00_AVGDELAY     	 : 132.49
+CORE_00_SLEEP_CYCLES 	 : 0
+CORE_00_IPC          	 : 2.720
+
+L3CACHE_ACCESS       	 : 13930
+L3CACHE_MISS         	 : 7022
+L3CACHE_MISSRATE     	 : 50.409
+
+DRAM_ACT         	 : 5776
+DRAM_REQ         	 : 7022
+DRAM_RBHR        	 : 17.74
+DRAM_AVG_SDELAY  	 : 94.69
+DRAM_AVG_WDELAY  	 : 33.81
+DRAM_AVG_TDELAY  	 : 128.50
+DRAM_AVG_BUSDELAY	 : 61.00
+DRAM_NUM_TREFI   	 : 23
+DRAM_NUM_TREFW   	 : 0
+DRAM_RFM         	 : 0
+
+OS_PAGE_MISS       	 : 1011
+
+SYS_CYCLES      	 : 367693
+AVG_CORE_CYCLES 	 : 367693
+
+
