@@ -1,0 +1,44 @@
+Initialized OS for 8388608 pages
+Size: 32 GB Channels: 2 and BanksPerChannel: 32
+
+   0 M	(INST:     0 M,) 
+
+------------------------------------
+------  MEMSIM.V1.1  ----------
+------------------------------------
+
+CORE_00_ID           	 :  0
+CORE_00_TRACE        	 : TRACES/nab_17.mtf.gz
+CORE_00_INST         	 : 1000001
+CORE_00_CYCLES       	 : 353702
+CORE_00_ACCESS       	 : 11662
+CORE_00_MISS         	 : 3240
+CORE_00_QFULL        	 : 0
+CORE_00_APKI         	 : 11.66
+CORE_00_MPKI         	 : 3.24
+CORE_00_MISSRATE     	 : 27.78
+CORE_00_AVGDELAY     	 : 99.46
+CORE_00_SLEEP_CYCLES 	 : 0
+CORE_00_IPC          	 : 2.827
+
+L3CACHE_ACCESS       	 : 11662
+L3CACHE_MISS         	 : 3240
+L3CACHE_MISSRATE     	 : 27.783
+
+DRAM_ACT         	 : 2152
+DRAM_REQ         	 : 3240
+DRAM_RBHR        	 : 33.58
+DRAM_AVG_SDELAY  	 : 70.09
+DRAM_AVG_WDELAY  	 : 27.95
+DRAM_AVG_TDELAY  	 : 98.04
+DRAM_AVG_BUSDELAY	 : 61.00
+DRAM_NUM_TREFI   	 : 22
+DRAM_NUM_TREFW   	 : 0
+DRAM_RFM         	 : 0
+
+OS_PAGE_MISS       	 : 107
+
+SYS_CYCLES      	 : 353702
+AVG_CORE_CYCLES 	 : 353702
+
+
