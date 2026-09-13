@@ -11,12 +11,18 @@ DDR5 is the only Ramulator2-supported standard with RFM commands
 org_preset "DDR5_16Gb_x8" gives bankgroup=8 x bank=4 = 32 banks/channel
 at rank=1, matching MEM_BANKS/MEM_CHANNELS exactly.
 
-NOTE on timing fidelity: this uses a stock DDR5-4800 JEDEC timing preset
-(real DRAM ns-based timings), not memsim's original hand-tuned
-"quarter-ns @ 4GHz" tRC/tCAS/tRAS/... constants from params.h. Bridging
-those exactly (matching clock domains, row-buffer size, address-mapping
-scheme) is follow-on calibration work, not done here -- this config gets
-a real, structurally-matched simulation running end-to-end.
+NOTE on timing fidelity: timing_preset="DDR5_8000AN" is chosen specifically
+because its tCK_ps=250 matches memsim's assumed 4GHz/0.25ns-per-cycle clock
+exactly (src/memsys.c calls memory_system->tick() once per memsim cycle,
+with no conversion factor -- so the two clocks must line up, or DRAM
+operations resolve in the wrong number of memsim cycles). This does NOT
+make every individual nCL/nRCD/nRAS/... constant bit-identical to memsim's
+original hand-tuned tRC/tCAS/tRAS/... values from params.h (those are
+JEDEC-standard DDR5-8000 timings, not memsim's own approximated numbers),
+and row-buffer size / address-mapping scheme are still stock choices, not
+calibrated to memsim's original custom model. Those remain follow-on
+calibration work -- this config removes the systematic clock-domain
+distortion and gets latencies into the correct real-ns ballpark.
 
 Usage:
   python -m ramulator export SCRIPTS/ramulator2_config.py -o src/ramulator2_config.yaml
@@ -54,7 +60,7 @@ args = Args()
 def make_controller():
     dram = ramulator.dram.DDR5(
         org_preset="DDR5_16Gb_x8",
-        timing_preset="DDR5_4800B",
+        timing_preset="DDR5_8000AN",
         rank=1,
     )
 
