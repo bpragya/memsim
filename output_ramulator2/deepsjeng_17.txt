@@ -1,0 +1,142 @@
+Initialized OS for 8388608 pages
+
+   0 M	(INST:     0 M,) 
+
+------------------------------------
+------  MEMSIM.V1.1  ----------
+------------------------------------
+
+CORE_00_ID           	 :  0
+CORE_00_TRACE        	 : TRACES/deepsjeng_17.mtf.gz
+CORE_00_INST         	 : 1000001
+CORE_00_CYCLES       	 : 275998
+CORE_00_ACCESS       	 : 1693
+CORE_00_MISS         	 : 907
+CORE_00_QFULL        	 : 0
+CORE_00_APKI         	 : 1.69
+CORE_00_MPKI         	 : 0.91
+CORE_00_MISSRATE     	 : 53.57
+CORE_00_AVGDELAY     	 : 104.62
+CORE_00_SLEEP_CYCLES 	 : 0
+CORE_00_IPC          	 : 3.623
+
+L3CACHE_ACCESS       	 : 1693
+L3CACHE_MISS         	 : 907
+L3CACHE_MISSRATE     	 : 53.574
+memory_system:
+  impl: GenericDRAM
+  total_num_read_requests: 907
+  total_num_write_requests: 0
+  channel_mapper:
+    impl: CacheLineInterleave
+
+
+  controller:
+    -
+      impl: GenericDDR
+      id: Channel 0
+      cycles: 275998
+      row_hits: 132
+      row_misses: 277
+      row_conflicts: 44
+      read_row_hits: 132
+      read_row_misses: 277
+      read_row_conflicts: 44
+      write_row_hits: 0
+      write_row_misses: 0
+      write_row_conflicts: 0
+      read_row_hits_core_0: 132
+      read_row_misses_core_0: 277
+      read_row_conflicts_core_0: 44
+      num_read_reqs: 453
+      num_write_reqs: 0
+      num_maintenance_reqs: 29
+      num_read_reqs_served: 453
+      num_write_reqs_served: 0
+      num_maintenance_reqs_served: 29
+      num_read_reqs_forwarded: 0
+      num_write_reqs_coalesced: 0
+      queue_len: 14495
+      read_queue_len: 13279
+      write_queue_len: 0
+      priority_queue_len: 1216
+      queue_len_avg: 0
+      read_queue_len_avg: 0
+      write_queue_len_avg: 0
+      priority_queue_len_avg: 0
+      read_latency: 47543
+      avg_read_latency: 0
+      read_throughput_MBps: 0
+      write_throughput_MBps: 0
+      total_throughput_MBps: 0
+      scheduler:
+        impl: FRFCFS
+
+      refresh_manager:
+        impl: AllBank
+
+      row_policy:
+        impl: Open
+
+      addr_mapper:
+        impl: RoBaRaCoCh
+
+
+    -
+      impl: GenericDDR
+      id: Channel 1
+      cycles: 275998
+      row_hits: 132
+      row_misses: 275
+      row_conflicts: 47
+      read_row_hits: 132
+      read_row_misses: 275
+      read_row_conflicts: 47
+      write_row_hits: 0
+      write_row_misses: 0
+      write_row_conflicts: 0
+      read_row_hits_core_0: 132
+      read_row_misses_core_0: 275
+      read_row_conflicts_core_0: 47
+      num_read_reqs: 454
+      num_write_reqs: 0
+      num_maintenance_reqs: 29
+      num_read_reqs_served: 454
+      num_write_reqs_served: 0
+      num_maintenance_reqs_served: 29
+      num_read_reqs_forwarded: 0
+      num_write_reqs_coalesced: 0
+      queue_len: 15206
+      read_queue_len: 13893
+      write_queue_len: 0
+      priority_queue_len: 1313
+      queue_len_avg: 0
+      read_queue_len_avg: 0
+      write_queue_len_avg: 0
+      priority_queue_len_avg: 0
+      read_latency: 48253
+      avg_read_latency: 0
+      read_throughput_MBps: 0
+      write_throughput_MBps: 0
+      total_throughput_MBps: 0
+      scheduler:
+        impl: FRFCFS
+
+      refresh_manager:
+        impl: AllBank
+
+      row_policy:
+        impl: Open
+
+      addr_mapper:
+        impl: RoBaRaCoCh
+
+
+
+
+OS_PAGE_MISS       	 : 294
+
+SYS_CYCLES      	 : 275998
+AVG_CORE_CYCLES 	 : 275998
+
+
