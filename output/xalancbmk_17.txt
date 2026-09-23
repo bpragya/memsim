@@ -10,35 +10,35 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/xalancbmk_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 297820
+CORE_00_CYCLES       	 : 283354
 CORE_00_ACCESS       	 : 27598
 CORE_00_MISS         	 : 4346
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 27.60
 CORE_00_MPKI         	 : 4.35
 CORE_00_MISSRATE     	 : 15.75
-CORE_00_AVGDELAY     	 : 132.57
+CORE_00_AVGDELAY     	 : 113.51
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.358
+CORE_00_IPC          	 : 3.529
 
 L3CACHE_ACCESS       	 : 27598
 L3CACHE_MISS         	 : 4346
 L3CACHE_MISSRATE     	 : 15.748
 
-DRAM_ACT         	 : 3448
+DRAM_ACT         	 : 2322
 DRAM_REQ         	 : 4346
-DRAM_RBHR        	 : 20.66
-DRAM_AVG_SDELAY  	 : 85.38
-DRAM_AVG_WDELAY  	 : 38.16
-DRAM_AVG_TDELAY  	 : 123.54
+DRAM_RBHR        	 : 46.57
+DRAM_AVG_SDELAY  	 : 61.17
+DRAM_AVG_WDELAY  	 : 42.94
+DRAM_AVG_TDELAY  	 : 104.11
 DRAM_AVG_BUSDELAY	 : 64.00
-DRAM_NUM_TREFI   	 : 19
+DRAM_NUM_TREFI   	 : 18
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 850
 
-SYS_CYCLES      	 : 297820
-AVG_CORE_CYCLES 	 : 297820
+SYS_CYCLES      	 : 283354
+AVG_CORE_CYCLES 	 : 283354
 
 

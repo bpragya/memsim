@@ -10,27 +10,27 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/povray_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 273713
+CORE_00_CYCLES       	 : 266969
 CORE_00_ACCESS       	 : 19002
 CORE_00_MISS         	 : 1616
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 19.00
 CORE_00_MPKI         	 : 1.62
 CORE_00_MISSRATE     	 : 8.50
-CORE_00_AVGDELAY     	 : 108.67
+CORE_00_AVGDELAY     	 : 66.95
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.653
+CORE_00_IPC          	 : 3.746
 
 L3CACHE_ACCESS       	 : 19002
 L3CACHE_MISS         	 : 1616
 L3CACHE_MISSRATE     	 :  8.504
 
-DRAM_ACT         	 : 1333
+DRAM_ACT         	 : 648
 DRAM_REQ         	 : 1616
-DRAM_RBHR        	 : 17.51
-DRAM_AVG_SDELAY  	 : 77.99
-DRAM_AVG_WDELAY  	 : 28.50
-DRAM_AVG_TDELAY  	 : 106.48
+DRAM_RBHR        	 : 59.90
+DRAM_AVG_SDELAY  	 : 33.80
+DRAM_AVG_WDELAY  	 : 31.69
+DRAM_AVG_TDELAY  	 : 65.49
 DRAM_AVG_BUSDELAY	 : 64.00
 DRAM_NUM_TREFI   	 : 17
 DRAM_NUM_TREFW   	 : 0
@@ -38,7 +38,7 @@ DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 152
 
-SYS_CYCLES      	 : 273713
-AVG_CORE_CYCLES 	 : 273713
+SYS_CYCLES      	 : 266969
+AVG_CORE_CYCLES 	 : 266969
 
 

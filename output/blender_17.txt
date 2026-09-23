@@ -1,5 +1,6 @@
 Initialized OS for 8388608 pages
 Size: 32 GB Channels: 2 and BanksPerChannel: 32
+with RoBRaCoCh address mapping scheme
 
    0 M	(INST:     0 M,) 
 
@@ -10,35 +11,35 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/blender_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 337907
+CORE_00_CYCLES       	 : 315880
 CORE_00_ACCESS       	 : 13930
 CORE_00_MISS         	 : 7022
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 13.93
 CORE_00_MPKI         	 : 7.02
 CORE_00_MISSRATE     	 : 50.41
-CORE_00_AVGDELAY     	 : 110.61
+CORE_00_AVGDELAY     	 : 69.23
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 2.959
+CORE_00_IPC          	 : 3.166
 
 L3CACHE_ACCESS       	 : 13930
 L3CACHE_MISS         	 : 7022
 L3CACHE_MISSRATE     	 : 50.409
 
-DRAM_ACT         	 : 5778
+DRAM_ACT         	 : 2813
 DRAM_REQ         	 : 7022
-DRAM_RBHR        	 : 17.72
-DRAM_AVG_SDELAY  	 : 84.98
-DRAM_AVG_WDELAY  	 : 23.87
-DRAM_AVG_TDELAY  	 : 108.85
+DRAM_RBHR        	 : 59.94
+DRAM_AVG_SDELAY  	 : 38.64
+DRAM_AVG_WDELAY  	 : 28.69
+DRAM_AVG_TDELAY  	 : 67.33
 DRAM_AVG_BUSDELAY	 : 64.00
-DRAM_NUM_TREFI   	 : 21
+DRAM_NUM_TREFI   	 : 20
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 1011
 
-SYS_CYCLES      	 : 337907
-AVG_CORE_CYCLES 	 : 337907
+SYS_CYCLES      	 : 315880
+AVG_CORE_CYCLES 	 : 315880
 
 

@@ -10,35 +10,35 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/namd_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 285942
+CORE_00_CYCLES       	 : 272712
 CORE_00_ACCESS       	 : 8738
 CORE_00_MISS         	 : 2014
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 8.74
 CORE_00_MPKI         	 : 2.01
 CORE_00_MISSRATE     	 : 23.05
-CORE_00_AVGDELAY     	 : 105.24
+CORE_00_AVGDELAY     	 : 56.54
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.497
+CORE_00_IPC          	 : 3.667
 
 L3CACHE_ACCESS       	 : 8738
 L3CACHE_MISS         	 : 2014
 L3CACHE_MISSRATE     	 : 23.049
 
-DRAM_ACT         	 : 1588
+DRAM_ACT         	 : 607
 DRAM_REQ         	 : 2014
-DRAM_RBHR        	 : 21.15
-DRAM_AVG_SDELAY  	 : 71.53
-DRAM_AVG_WDELAY  	 : 32.75
-DRAM_AVG_TDELAY  	 : 104.28
+DRAM_RBHR        	 : 69.86
+DRAM_AVG_SDELAY  	 : 24.12
+DRAM_AVG_WDELAY  	 : 31.30
+DRAM_AVG_TDELAY  	 : 55.42
 DRAM_AVG_BUSDELAY	 : 64.00
-DRAM_NUM_TREFI   	 : 18
+DRAM_NUM_TREFI   	 : 17
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 89
 
-SYS_CYCLES      	 : 285942
-AVG_CORE_CYCLES 	 : 285942
+SYS_CYCLES      	 : 272712
+AVG_CORE_CYCLES 	 : 272712
 
 

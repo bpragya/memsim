@@ -145,13 +145,35 @@ void    dram_parseaddr(DRAM *d, Addr lineaddr, uns64 *myrowbufid, uns64 *mybanki
     uns64 shifted_addr1 = lineaddr / d->num_channels;
     uns64 my_local_bankid = shifted_addr1 % d->banks_in_channel;// banks are striped xs
     uns64 shifted_addr2 = shifted_addr1 / d->banks_in_channel;
-    
+
     *myrowbufid  = shifted_addr2/d->lines_in_rowbuf;
     *mybankid    = my_local_bankid;
     *mychannelid = my_channel_id;
     return;
   }
-  
+
+  if(policy == DRAM_MAP_ROBARACOCH){
+    // Row-Bank-Rank-Column-Channel (MSB to LSB), matching Ramulator2's
+    // RoBaRaCoCh address mapper: column bits are consumed first (staying
+    // in the same bank/row longest), row bits are consumed last (changing
+    // least often). No separate rank term -- single-rank config.
+    uns64 my_channel_id = lineaddr % d->num_channels;
+    uns64 shifted_addr1 = lineaddr / d->num_channels;
+
+    uns64 shifted_addr2 = shifted_addr1 / d->lines_in_rowbuf; // column consumed first
+
+    uns64 bankgroup_id  = shifted_addr2 % DRAM_BANKGROUPS;
+    uns64 shifted_addr3 = shifted_addr2 / DRAM_BANKGROUPS;
+
+    uns64 bank_in_bg    = shifted_addr3 % d->banks_in_bankgroup;
+    uns64 shifted_addr4 = shifted_addr3 / d->banks_in_bankgroup;
+
+    *myrowbufid  = shifted_addr4; // whatever remains = row (MSB)
+    *mybankid    = bankgroup_id * d->banks_in_bankgroup + bank_in_bg;
+    *mychannelid = my_channel_id;
+    return;
+  }
+
   assert(0); // other policy not implemented yet
 }
 
