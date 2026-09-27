@@ -206,7 +206,7 @@ uns64   dram_bank_service(DRAM_Bank *b,  DRAM_ReqType type, uns64 rowid, uns64 r
     
     retval = act_delay; 
     b->status = DRAM_BANK_BUSY;
-    b->sleep_cycle = cycle + act_delay + tRDRD; 
+    b->sleep_cycle = cycle + act_delay + tCCDS; // same bank -> always same bank group
   }
 
 

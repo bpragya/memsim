@@ -31,7 +31,7 @@ DRAM_Channel*   dram_channel_new(uns id, uns num_banks, uns num_rows){
   }
 
   c->tfaw_token.tfaw_time = tFAW;
-  c->rdwr_token.rdwr_time = tRDRD;
+  c->rdwr_token.has_prev = FALSE;
   return c;
 }
 
@@ -154,16 +154,18 @@ void   dram_channel_schedule_rdwrq(DRAM_Channel *c){
      
     if(c->dbusq.entries[index].valid == TRUE){
       if(cycle >= c->dbusq.entries[index].ready_time){
-	if(dram_channel_get_rdwr_token(c, cycle)){
-	  uns64 rdwr_bus_delay = tCAS+tRDRD;
-	 
+	uns64 my_bankgroup = index / c->banks_in_bankgroup;
+	uns64 ccd_delay;
+	if(dram_channel_get_rdwr_token(c, cycle, my_bankgroup, &ccd_delay)){
+	  uns64 rdwr_bus_delay = tCAS+ccd_delay;
+
 	  if(c->dbusq.entries[index].reqtype == DRAM_REQ_RD){
 	    memsys_callback(memsys, c->dbusq.entries[index].lineaddr);
 	  }
 	  c->s_bus_time += rdwr_bus_delay;
 	  c->dbusq.size--;
 	  c->dbusq.entries[index].valid = FALSE;
-	  c->bank[index]->sleep_cycle = (cycle+tRDRD); // bank busy ...
+	  c->bank[index]->sleep_cycle = (cycle+ccd_delay); // bank busy ...
 	}
 	return; // if checked token, then no more token left
       }
@@ -191,9 +193,18 @@ Flag   dram_channel_get_tfaw_token(DRAM_Channel *c, uns64 in_cycle){
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-Flag   dram_channel_get_rdwr_token(DRAM_Channel *c, uns64 in_cycle){
-  if( (in_cycle -  c->rdwr_token.prev_time) >= c->rdwr_token.rdwr_time){
+Flag   dram_channel_get_rdwr_token(DRAM_Channel *c, uns64 in_cycle, uns64 my_bankgroup, uns64 *out_delay){
+  // same bank group -> tCCDS (shorter), different bank group -> tCCDL (longer)
+  uns64 required_delay = tCCDS;
+  if(c->rdwr_token.has_prev && (my_bankgroup != c->rdwr_token.prev_bankgroup)){
+    required_delay = tCCDL;
+  }
+
+  if( (!c->rdwr_token.has_prev) || (in_cycle - c->rdwr_token.prev_time) >= required_delay){
     c->rdwr_token.prev_time = in_cycle;
+    c->rdwr_token.prev_bankgroup = my_bankgroup;
+    c->rdwr_token.has_prev = TRUE;
+    *out_delay = required_delay;
     return TRUE;
   }
   return FALSE;

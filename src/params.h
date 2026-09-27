@@ -42,7 +42,8 @@ uns64       tACT=16*4;
 uns64       tCAS=12*4;
 uns64       tPRE=16*4;
 uns64       tRAS=32*4;
-uns64       tRDRD=13;
+uns64       tCCDS=8;  // column-to-column delay, same bank group (replaces flat tRDRD)
+uns64       tCCDL=20; // column-to-column delay, different bank group
 uns64       tBUS=13;
 
 uns64       tRFC=410*4;
@@ -295,9 +296,16 @@ void read_params(int argc, char **argv){
 		}
 	    }
 
-	    else if (!strcmp(argv[ii], "-tRDRD")) {
-	        if (ii < argc - 1) {		  
-		    tRDRD = atoi(argv[ii+1]);
+	    else if (!strcmp(argv[ii], "-tCCDS")) {
+	        if (ii < argc - 1) {
+		    tCCDS = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-tCCDL")) {
+	        if (ii < argc - 1) {
+		    tCCDL = atoi(argv[ii+1]);
 		    ii += 1;
 		}
 	    }
