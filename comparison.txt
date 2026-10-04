@@ -1,13 +1,31 @@
-memsim original DRAM model vs memsim+Ramulator2 -- both on MOP4CLXOR address mapping
+WHAT IS BEING COMPARED
+======================
+Two DRAM models running the same memsim core/cache front end on the same traces:
 
-original   = memsim original DRAM model, branch robaracoch-nCCDS-nCCDL-changes, output/
-             -inst_limit 1000000 -drammappolicy 7
-             -tRC 184 -tACT 56 -tCAS 56 -tPRE 56 -tRAS 128 -tRFC 1177 -tREFI 15600
-             (tCCDS/tCCDM/tCCDL = 8/16/20, params.h defaults)
-ramulator2 = memsim + Ramulator2 DDR5_8000AN / DDR5_16Gb_x8, branch integrating-ram2,
-             output_ramulator2/, addr_mapper MOP4CLXOR (SCRIPTS/ramulator2_config.py)
-diff       = (ramulator2 - original) / original
-DRAM_ACT / DRAM_RBHR for ramulator2 = row_misses+row_conflicts / row_hits share, summed over both channels
+  original   = memsim's original hand-written DRAM model
+               branch robaracoch-nCCDS-nCCDL-changes, results in output/
+  ramulator2 = memsim with Ramulator2 as the DRAM model (DDR5_8000AN timing, DDR5_16Gb_x8)
+               branch integrating-ram2, results in output_ramulator2/
+
+Held the same on both sides:
+  - Traces:          22 SPEC2017 traces, 1M instructions each (-inst_limit 1000000)
+  - Address mapping: MOP4CLXOR (memsim -drammappolicy 7 / Ramulator2 addr_mapper MOP4CLXOR),
+                     verified bit-for-bit identical on 200,000 addresses
+  - Geometry:        2 channels x 32 banks (8 bank groups x 4), 1 rank, open page
+  - Clock:           0.25 ns per cycle on both sides
+  - DRAM timings:    DDR5_8000AN. The original model gets them as flags:
+                     -tRC 184 -tACT 56 -tCAS 56 -tPRE 56 -tRAS 128 -tRFC 1177 -tREFI 15600
+                     tCCDS/tCCDM/tCCDL = 8/16/20 (params.h defaults, same rules as Ramulator2)
+
+What still differs is how each model turns those timings into request latency -- see
+the Conclusion at the bottom.
+
+How to read it:
+  diff       = (ramulator2 - original) / original; positive CYCLES diff = ramulator2 slower
+  DRAM_ACT   = row activations; for ramulator2 = row_misses + row_conflicts, both channels
+  DRAM_RBHR  = row-buffer hit rate (%); diff is in percentage points
+  Traces with MPKI < 1 barely touch DRAM; they are listed but left out of the Summary.
+
 
 === blender_17 ===  MPKI=7.02
   CORE_00_CYCLES       original=336417       ramulator2=401381       diff=+19.31%
