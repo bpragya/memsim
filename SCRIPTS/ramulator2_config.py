@@ -35,6 +35,7 @@ Usage:
     MEMSIM_RFM_THRESH=<int>              default 16   (matches -rfmth)
     MEMSIM_SCHED={frfcfs,frfcfs_rowhit}  default frfcfs (matches -dramschedpolicy)
     MEMSIM_CLOSEPAGE={0,1}               default 0    (matches -memclosepage)
+    MEMSIM_ADDR_MAP={mop4clxor,robaracoch} default mop4clxor (matches -drammappolicy 7/6)
 
   Example:
     MEMSIM_RFM_MODE=sb MEMSIM_RFM_THRESH=16 \\
@@ -52,6 +53,7 @@ class Args:
     rfm_thresh = int(os.environ.get("MEMSIM_RFM_THRESH", "16"))
     sched = os.environ.get("MEMSIM_SCHED", "frfcfs")
     closepage = os.environ.get("MEMSIM_CLOSEPAGE", "0") == "1"
+    addr_map = os.environ.get("MEMSIM_ADDR_MAP", "mop4clxor")
 
 
 args = Args()
@@ -90,7 +92,11 @@ def make_controller():
         scheduler=scheduler,
         refresh_manager=refresh_manager,
         row_policy=row_policy,
-        addr_mapper=ramulator.addr_mapper.RoBaRaCoCh(),
+        addr_mapper=(
+            ramulator.addr_mapper.RoBaRaCoCh()
+            if args.addr_map == "robaracoch"
+            else ramulator.addr_mapper.MOP4CLXOR()
+        ),
         controller_plugins=plugins,
     )
 

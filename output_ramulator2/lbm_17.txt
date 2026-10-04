@@ -9,16 +9,16 @@ Initialized OS for 8388608 pages
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/lbm_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 610621
+CORE_00_CYCLES       	 : 739949
 CORE_00_ACCESS       	 : 40986
 CORE_00_MISS         	 : 25591
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 40.99
 CORE_00_MPKI         	 : 25.59
 CORE_00_MISSRATE     	 : 62.44
-CORE_00_AVGDELAY     	 : 106.06
+CORE_00_AVGDELAY     	 : 152.71
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 1.638
+CORE_00_IPC          	 : 1.351
 
 L3CACHE_ACCESS       	 : 40986
 L3CACHE_MISS         	 : 25591
@@ -35,36 +35,36 @@ memory_system:
     -
       impl: GenericDDR
       id: Channel 0
-      cycles: 610621
-      row_hits: 10685
-      row_misses: 687
-      row_conflicts: 1423
-      read_row_hits: 10685
-      read_row_misses: 687
-      read_row_conflicts: 1423
+      cycles: 739949
+      row_hits: 5171
+      row_misses: 1488
+      row_conflicts: 6137
+      read_row_hits: 5171
+      read_row_misses: 1488
+      read_row_conflicts: 6137
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 10685
-      read_row_misses_core_0: 687
-      read_row_conflicts_core_0: 1423
+      read_row_hits_core_0: 5171
+      read_row_misses_core_0: 1488
+      read_row_conflicts_core_0: 6137
       num_read_reqs: 12796
       num_write_reqs: 0
-      num_maintenance_reqs: 39
-      num_read_reqs_served: 12794
+      num_maintenance_reqs: 47
+      num_read_reqs_served: 12793
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 39
+      num_maintenance_reqs_served: 47
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 429724
-      read_queue_len: 426350
+      queue_len: 715202
+      read_queue_len: 710201
       write_queue_len: 0
-      priority_queue_len: 3374
+      priority_queue_len: 5001
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1363226
+      read_latency: 1955753
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -79,42 +79,42 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
     -
       impl: GenericDDR
       id: Channel 1
-      cycles: 610621
-      row_hits: 10672
-      row_misses: 691
-      row_conflicts: 1432
-      read_row_hits: 10672
-      read_row_misses: 691
-      read_row_conflicts: 1432
+      cycles: 739949
+      row_hits: 5064
+      row_misses: 1482
+      row_conflicts: 6249
+      read_row_hits: 5064
+      read_row_misses: 1482
+      read_row_conflicts: 6249
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 10672
-      read_row_misses_core_0: 691
-      read_row_conflicts_core_0: 1432
+      read_row_hits_core_0: 5064
+      read_row_misses_core_0: 1482
+      read_row_conflicts_core_0: 6249
       num_read_reqs: 12795
       num_write_reqs: 0
-      num_maintenance_reqs: 39
-      num_read_reqs_served: 12795
+      num_maintenance_reqs: 47
+      num_read_reqs_served: 12791
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 39
+      num_maintenance_reqs_served: 47
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 441536
-      read_queue_len: 437856
+      queue_len: 730397
+      read_queue_len: 724960
       write_queue_len: 0
-      priority_queue_len: 3680
+      priority_queue_len: 5437
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1375590
+      read_latency: 1976202
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -129,14 +129,14 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
 
 
 OS_PAGE_MISS       	 : 419
 
-SYS_CYCLES      	 : 610621
-AVG_CORE_CYCLES 	 : 610621
+SYS_CYCLES      	 : 739949
+AVG_CORE_CYCLES 	 : 739949
 
 

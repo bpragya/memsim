@@ -9,16 +9,16 @@ Initialized OS for 8388608 pages
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/omnetpp_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 516987
+CORE_00_CYCLES       	 : 554997
 CORE_00_ACCESS       	 : 20022
 CORE_00_MISS         	 : 12940
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 20.02
 CORE_00_MPKI         	 : 12.94
 CORE_00_MISSRATE     	 : 64.63
-CORE_00_AVGDELAY     	 : 167.70
+CORE_00_AVGDELAY     	 : 188.55
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 1.934
+CORE_00_IPC          	 : 1.802
 
 L3CACHE_ACCESS       	 : 20022
 L3CACHE_MISS         	 : 12940
@@ -35,36 +35,36 @@ memory_system:
     -
       impl: GenericDDR
       id: Channel 0
-      cycles: 516987
-      row_hits: 2561
-      row_misses: 1001
-      row_conflicts: 2923
-      read_row_hits: 2561
-      read_row_misses: 1001
-      read_row_conflicts: 2923
+      cycles: 554997
+      row_hits: 590
+      row_misses: 1102
+      row_conflicts: 4793
+      read_row_hits: 590
+      read_row_misses: 1102
+      read_row_conflicts: 4793
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 2561
-      read_row_misses_core_0: 1001
-      read_row_conflicts_core_0: 2923
+      read_row_hits_core_0: 590
+      read_row_misses_core_0: 1102
+      read_row_conflicts_core_0: 4793
       num_read_reqs: 6485
       num_write_reqs: 0
-      num_maintenance_reqs: 33
+      num_maintenance_reqs: 35
       num_read_reqs_served: 6485
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 33
+      num_maintenance_reqs_served: 35
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 461727
-      read_queue_len: 458659
+      queue_len: 493036
+      read_queue_len: 489376
       write_queue_len: 0
-      priority_queue_len: 3068
+      priority_queue_len: 3660
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1094179
+      read_latency: 1234710
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -79,42 +79,42 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
     -
       impl: GenericDDR
       id: Channel 1
-      cycles: 516987
-      row_hits: 2541
-      row_misses: 992
-      row_conflicts: 2922
-      read_row_hits: 2541
-      read_row_misses: 992
-      read_row_conflicts: 2922
+      cycles: 554997
+      row_hits: 624
+      row_misses: 1096
+      row_conflicts: 4735
+      read_row_hits: 624
+      read_row_misses: 1096
+      read_row_conflicts: 4735
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 2541
-      read_row_misses_core_0: 992
-      read_row_conflicts_core_0: 2922
+      read_row_hits_core_0: 624
+      read_row_misses_core_0: 1096
+      read_row_conflicts_core_0: 4735
       num_read_reqs: 6455
       num_write_reqs: 0
-      num_maintenance_reqs: 33
+      num_maintenance_reqs: 35
       num_read_reqs_served: 6455
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 33
+      num_maintenance_reqs_served: 35
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 458626
-      read_queue_len: 455662
+      queue_len: 481825
+      read_queue_len: 478170
       write_queue_len: 0
-      priority_queue_len: 2964
+      priority_queue_len: 3655
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1088775
+      read_latency: 1218043
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -129,14 +129,14 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
 
 
 OS_PAGE_MISS       	 : 4002
 
-SYS_CYCLES      	 : 516987
-AVG_CORE_CYCLES 	 : 516987
+SYS_CYCLES      	 : 554997
+AVG_CORE_CYCLES 	 : 554997
 
 

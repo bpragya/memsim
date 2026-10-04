@@ -9,16 +9,16 @@ Initialized OS for 8388608 pages
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/mcf_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 456472
+CORE_00_CYCLES       	 : 546808
 CORE_00_ACCESS       	 : 55560
 CORE_00_MISS         	 : 25626
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 55.56
 CORE_00_MPKI         	 : 25.63
 CORE_00_MISSRATE     	 : 46.12
-CORE_00_AVGDELAY     	 : 119.69
+CORE_00_AVGDELAY     	 : 164.67
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 2.191
+CORE_00_IPC          	 : 1.829
 
 L3CACHE_ACCESS       	 : 55560
 L3CACHE_MISS         	 : 25626
@@ -35,36 +35,36 @@ memory_system:
     -
       impl: GenericDDR
       id: Channel 0
-      cycles: 456472
-      row_hits: 10752
-      row_misses: 580
-      row_conflicts: 1507
-      read_row_hits: 10752
-      read_row_misses: 580
-      read_row_conflicts: 1507
+      cycles: 546808
+      row_hits: 4766
+      row_misses: 839
+      row_conflicts: 7234
+      read_row_hits: 4766
+      read_row_misses: 839
+      read_row_conflicts: 7234
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 10752
-      read_row_misses_core_0: 580
-      read_row_conflicts_core_0: 1507
+      read_row_hits_core_0: 4766
+      read_row_misses_core_0: 839
+      read_row_conflicts_core_0: 7234
       num_read_reqs: 12839
       num_write_reqs: 0
-      num_maintenance_reqs: 29
+      num_maintenance_reqs: 35
       num_read_reqs_served: 12839
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 29
+      num_maintenance_reqs_served: 35
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 612820
-      read_queue_len: 610271
+      queue_len: 853135
+      read_queue_len: 848963
       write_queue_len: 0
-      priority_queue_len: 2549
+      priority_queue_len: 4172
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1550292
+      read_latency: 2125092
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -79,42 +79,42 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
     -
       impl: GenericDDR
       id: Channel 1
-      cycles: 456472
-      row_hits: 10699
-      row_misses: 574
-      row_conflicts: 1514
-      read_row_hits: 10699
-      read_row_misses: 574
-      read_row_conflicts: 1514
+      cycles: 546808
+      row_hits: 4679
+      row_misses: 830
+      row_conflicts: 7278
+      read_row_hits: 4679
+      read_row_misses: 830
+      read_row_conflicts: 7278
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 10699
-      read_row_misses_core_0: 574
-      read_row_conflicts_core_0: 1514
+      read_row_hits_core_0: 4679
+      read_row_misses_core_0: 830
+      read_row_conflicts_core_0: 7278
       num_read_reqs: 12787
       num_write_reqs: 0
-      num_maintenance_reqs: 29
+      num_maintenance_reqs: 35
       num_read_reqs_served: 12787
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 29
+      num_maintenance_reqs_served: 35
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 607965
-      read_queue_len: 605709
+      queue_len: 849864
+      read_queue_len: 845795
       write_queue_len: 0
-      priority_queue_len: 2256
+      priority_queue_len: 4069
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1542494
+      read_latency: 2120386
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -129,14 +129,14 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
 
 
 OS_PAGE_MISS       	 : 1029
 
-SYS_CYCLES      	 : 456472
-AVG_CORE_CYCLES 	 : 456472
+SYS_CYCLES      	 : 546808
+AVG_CORE_CYCLES 	 : 546808
 
 

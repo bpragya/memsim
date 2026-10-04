@@ -9,16 +9,16 @@ Initialized OS for 8388608 pages
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/parest_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 463890
+CORE_00_CYCLES       	 : 714173
 CORE_00_ACCESS       	 : 46159
 CORE_00_MISS         	 : 37593
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 46.16
 CORE_00_MPKI         	 : 37.59
 CORE_00_MISSRATE     	 : 81.44
-CORE_00_AVGDELAY     	 : 118.26
+CORE_00_AVGDELAY     	 : 162.18
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 2.156
+CORE_00_IPC          	 : 1.400
 
 L3CACHE_ACCESS       	 : 46159
 L3CACHE_MISS         	 : 37593
@@ -35,36 +35,36 @@ memory_system:
     -
       impl: GenericDDR
       id: Channel 0
-      cycles: 463890
-      row_hits: 16125
-      row_misses: 759
-      row_conflicts: 1906
-      read_row_hits: 16125
-      read_row_misses: 759
-      read_row_conflicts: 1906
+      cycles: 714173
+      row_hits: 7541
+      row_misses: 1429
+      row_conflicts: 9820
+      read_row_hits: 7541
+      read_row_misses: 1429
+      read_row_conflicts: 9820
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 16125
-      read_row_misses_core_0: 759
-      read_row_conflicts_core_0: 1906
+      read_row_hits_core_0: 7541
+      read_row_misses_core_0: 1429
+      read_row_conflicts_core_0: 9820
       num_read_reqs: 18790
       num_write_reqs: 0
-      num_maintenance_reqs: 29
+      num_maintenance_reqs: 45
       num_read_reqs_served: 18790
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 29
+      num_maintenance_reqs_served: 45
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 903850
-      read_queue_len: 900880
+      queue_len: 1240065
+      read_queue_len: 1234211
       write_queue_len: 0
-      priority_queue_len: 2970
+      priority_queue_len: 5854
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 2255274
+      read_latency: 3069494
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -79,42 +79,42 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
     -
       impl: GenericDDR
       id: Channel 1
-      cycles: 463890
-      row_hits: 16123
-      row_misses: 758
-      row_conflicts: 1922
-      read_row_hits: 16123
-      read_row_misses: 758
-      read_row_conflicts: 1922
+      cycles: 714173
+      row_hits: 7522
+      row_misses: 1430
+      row_conflicts: 9851
+      read_row_hits: 7522
+      read_row_misses: 1430
+      read_row_conflicts: 9851
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 16123
-      read_row_misses_core_0: 758
-      read_row_conflicts_core_0: 1922
+      read_row_hits_core_0: 7522
+      read_row_misses_core_0: 1430
+      read_row_conflicts_core_0: 9851
       num_read_reqs: 18803
       num_write_reqs: 0
-      num_maintenance_reqs: 29
+      num_maintenance_reqs: 45
       num_read_reqs_served: 18803
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 29
+      num_maintenance_reqs_served: 45
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 874607
-      read_queue_len: 871513
+      queue_len: 1231933
+      read_queue_len: 1226108
       write_queue_len: 0
-      priority_queue_len: 3094
+      priority_queue_len: 5825
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 2227436
+      read_latency: 3064319
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -129,14 +129,14 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
 
 
 OS_PAGE_MISS       	 : 1563
 
-SYS_CYCLES      	 : 463890
-AVG_CORE_CYCLES 	 : 463890
+SYS_CYCLES      	 : 714173
+AVG_CORE_CYCLES 	 : 714173
 
 

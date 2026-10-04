@@ -9,16 +9,16 @@ Initialized OS for 8388608 pages
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/roms_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 387767
+CORE_00_CYCLES       	 : 591875
 CORE_00_ACCESS       	 : 32019
 CORE_00_MISS         	 : 22730
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 32.02
 CORE_00_MPKI         	 : 22.73
 CORE_00_MISSRATE     	 : 70.99
-CORE_00_AVGDELAY     	 : 91.43
+CORE_00_AVGDELAY     	 : 141.11
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 2.579
+CORE_00_IPC          	 : 1.690
 
 L3CACHE_ACCESS       	 : 32019
 L3CACHE_MISS         	 : 22730
@@ -35,36 +35,36 @@ memory_system:
     -
       impl: GenericDDR
       id: Channel 0
-      cycles: 387767
-      row_hits: 9998
-      row_misses: 590
-      row_conflicts: 778
-      read_row_hits: 9998
-      read_row_misses: 590
-      read_row_conflicts: 778
+      cycles: 591875
+      row_hits: 5273
+      row_misses: 1174
+      row_conflicts: 4919
+      read_row_hits: 5273
+      read_row_misses: 1174
+      read_row_conflicts: 4919
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 9998
-      read_row_misses_core_0: 590
-      read_row_conflicts_core_0: 778
+      read_row_hits_core_0: 5273
+      read_row_misses_core_0: 1174
+      read_row_conflicts_core_0: 4919
       num_read_reqs: 11366
       num_write_reqs: 0
-      num_maintenance_reqs: 24
+      num_maintenance_reqs: 37
       num_read_reqs_served: 11366
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 24
+      num_maintenance_reqs_served: 37
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 254741
-      read_queue_len: 252254
+      queue_len: 534078
+      read_queue_len: 530377
       write_queue_len: 0
-      priority_queue_len: 2487
+      priority_queue_len: 3701
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1056393
+      read_latency: 1599347
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -79,42 +79,42 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
     -
       impl: GenericDDR
       id: Channel 1
-      cycles: 387767
-      row_hits: 9993
-      row_misses: 587
-      row_conflicts: 784
-      read_row_hits: 9993
-      read_row_misses: 587
-      read_row_conflicts: 784
+      cycles: 591875
+      row_hits: 5228
+      row_misses: 1176
+      row_conflicts: 4960
+      read_row_hits: 5228
+      read_row_misses: 1176
+      read_row_conflicts: 4960
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 9993
-      read_row_misses_core_0: 587
-      read_row_conflicts_core_0: 784
+      read_row_hits_core_0: 5228
+      read_row_misses_core_0: 1176
+      read_row_conflicts_core_0: 4960
       num_read_reqs: 11364
       num_write_reqs: 0
-      num_maintenance_reqs: 24
+      num_maintenance_reqs: 37
       num_read_reqs_served: 11364
       num_write_reqs_served: 0
-      num_maintenance_reqs_served: 24
+      num_maintenance_reqs_served: 37
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 242220
-      read_queue_len: 240035
+      queue_len: 562484
+      read_queue_len: 559019
       write_queue_len: 0
-      priority_queue_len: 2185
+      priority_queue_len: 3465
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 1044186
+      read_latency: 1630346
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -129,14 +129,14 @@ memory_system:
         impl: Open
 
       addr_mapper:
-        impl: RoBaRaCoCh
+        impl: MOP4CLXOR
 
 
 
 
 OS_PAGE_MISS       	 : 1035
 
-SYS_CYCLES      	 : 387767
-AVG_CORE_CYCLES 	 : 387767
+SYS_CYCLES      	 : 591875
+AVG_CORE_CYCLES 	 : 591875
 
 
