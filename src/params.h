@@ -42,8 +42,9 @@ uns64       tACT=16*4;
 uns64       tCAS=12*4;
 uns64       tPRE=16*4;
 uns64       tRAS=32*4;
-uns64       tCCDS=8;  // column-to-column delay, same bank group (replaces flat tRDRD)
-uns64       tCCDL=20; // column-to-column delay, different bank group
+uns64       tCCDS=8;  // RD-to-RD, different bank group (Ramulator2 nCCDS, rank level)
+uns64       tCCDL=20; // RD-to-RD, same bank (Ramulator2 nCCDL, bank level)
+uns64       tCCDM=16; // RD-to-RD, other bank in same bank group (Ramulator2 nCCDM, bank sibling)
 uns64       tBUS=13;
 
 uns64       tRFC=410*4;
@@ -306,6 +307,13 @@ void read_params(int argc, char **argv){
 	    else if (!strcmp(argv[ii], "-tCCDL")) {
 	        if (ii < argc - 1) {
 		    tCCDL = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-tCCDM")) {
+	        if (ii < argc - 1) {
+		    tCCDM = atoi(argv[ii+1]);
 		    ii += 1;
 		}
 	    }

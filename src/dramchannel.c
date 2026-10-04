@@ -154,9 +154,8 @@ void   dram_channel_schedule_rdwrq(DRAM_Channel *c){
      
     if(c->dbusq.entries[index].valid == TRUE){
       if(cycle >= c->dbusq.entries[index].ready_time){
-	uns64 my_bankgroup = index / c->banks_in_bankgroup;
 	uns64 ccd_delay;
-	if(dram_channel_get_rdwr_token(c, cycle, my_bankgroup, &ccd_delay)){
+	if(dram_channel_get_rdwr_token(c, cycle, index, &ccd_delay)){
 	  uns64 rdwr_bus_delay = tCAS+ccd_delay;
 
 	  if(c->dbusq.entries[index].reqtype == DRAM_REQ_RD){
@@ -165,7 +164,7 @@ void   dram_channel_schedule_rdwrq(DRAM_Channel *c){
 	  c->s_bus_time += rdwr_bus_delay;
 	  c->dbusq.size--;
 	  c->dbusq.entries[index].valid = FALSE;
-	  c->bank[index]->sleep_cycle = (cycle+ccd_delay); // bank busy ...
+	  c->bank[index]->sleep_cycle = (cycle+tCCDL); // bank busy -- same bank RD-to-RD is tCCDL
 	}
 	return; // if checked token, then no more token left
       }
@@ -193,21 +192,36 @@ Flag   dram_channel_get_tfaw_token(DRAM_Channel *c, uns64 in_cycle){
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-Flag   dram_channel_get_rdwr_token(DRAM_Channel *c, uns64 in_cycle, uns64 my_bankgroup, uns64 *out_delay){
-  // same bank group -> tCCDS (shorter), different bank group -> tCCDL (longer)
-  uns64 required_delay = tCCDS;
-  if(c->rdwr_token.has_prev && (my_bankgroup != c->rdwr_token.prev_bankgroup)){
-    required_delay = tCCDL;
+Flag   dram_channel_get_rdwr_token(DRAM_Channel *c, uns64 in_cycle, uns64 my_bank, uns64 *out_delay){
+  // Matches Ramulator2's DDR5 RD-to-RD constraints (single rank):
+  //   any bank on the channel          -> tCCDS (checked here)
+  //   other bank, same bank group      -> tCCDM (checked here)
+  //   same bank                        -> tCCDL (enforced by bank sleep_cycle after dispatch)
+  DRAM_RDWR_Token *t = &c->rdwr_token;
+  uns64 my_bankgroup = my_bank / c->banks_in_bankgroup;
+
+  if(t->has_prev && (in_cycle - t->prev_time) < tCCDS){
+    return FALSE;
+  }
+  if(t->bg_has_prev[my_bankgroup] && (in_cycle - t->bg_prev_time[my_bankgroup]) < tCCDM){
+    return FALSE;
   }
 
-  if( (!c->rdwr_token.has_prev) || (in_cycle - c->rdwr_token.prev_time) >= required_delay){
-    c->rdwr_token.prev_time = in_cycle;
-    c->rdwr_token.prev_bankgroup = my_bankgroup;
-    c->rdwr_token.has_prev = TRUE;
-    *out_delay = required_delay;
-    return TRUE;
+  // spacing that applied relative to the previous dispatch (for bus-delay stats)
+  uns64 delay = tCCDS;
+  if(t->has_prev && (my_bank == t->prev_bank)){
+    delay = tCCDL;
+  }else if(t->has_prev && (my_bankgroup == t->prev_bank / c->banks_in_bankgroup)){
+    delay = tCCDM;
   }
-  return FALSE;
+
+  t->prev_time = in_cycle;
+  t->prev_bank = my_bank;
+  t->has_prev = TRUE;
+  t->bg_prev_time[my_bankgroup] = in_cycle;
+  t->bg_has_prev[my_bankgroup] = TRUE;
+  *out_delay = delay;
+  return TRUE;
 }
 
 ////////////////////////////////////////////////////////////////////

@@ -45,6 +45,7 @@ extern uns64       tPRE;
 extern uns64       tRAS;
 extern uns64       tCCDS;
 extern uns64       tCCDL;
+extern uns64       tCCDM;
 extern uns64       tREFI;
 extern uns64       tREFW;
 extern uns64       tBUS;

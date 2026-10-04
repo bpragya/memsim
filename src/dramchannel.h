@@ -37,9 +37,11 @@ struct DRAM_TFAW_Token {
 };
 
 struct DRAM_RDWR_Token {
-  uns64     prev_time;      // last dispatch cycle
-  uns64     prev_bankgroup; // bank group of last dispatch
-  Flag      has_prev;       // FALSE until the first dispatch
+  uns64     prev_time;        // last dispatch cycle on this channel
+  uns64     prev_bank;        // bank of last dispatch
+  Flag      has_prev;         // FALSE until the first dispatch
+  uns64     bg_prev_time[32]; // last dispatch cycle per bank group
+  Flag      bg_has_prev[32];  // FALSE until the first dispatch in that bank group
 };
 
 
@@ -80,7 +82,7 @@ void   dram_channel_schedule_rdwrq(DRAM_Channel *c);
 
 
 Flag   dram_channel_get_tfaw_token(DRAM_Channel *c, uns64 in_cycle);
-Flag   dram_channel_get_rdwr_token(DRAM_Channel *c, uns64 in_cycle, uns64 my_bankgroup, uns64 *out_delay);
+Flag   dram_channel_get_rdwr_token(DRAM_Channel *c, uns64 in_cycle, uns64 my_bank, uns64 *out_delay);
 
 void   dram_channel_print_state(DRAM_Channel *c);
 
