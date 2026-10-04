@@ -174,6 +174,53 @@ void    dram_parseaddr(DRAM *d, Addr lineaddr, uns64 *myrowbufid, uns64 *mybanki
     return;
   }
 
+  if(policy == DRAM_MAP_MOP4CLXOR){
+    // Gang-of-4 + XOR scramble, matching Ramulator2's MOP4CLXOR address
+    // mapper exactly (verified via a standalone Python trace against
+    // Ramulator2's own addr_mapper_base.cpp bit-width computation before
+    // porting). Column bits are split: the low 2 bits (which of the 4
+    // gang lines) are consumed first, then rank/bankgroup/bank, then the
+    // remaining column bits, then row (whatever's left). The low-2 +
+    // remaining column bits are then recombined and used to XOR-scramble
+    // bankgroup/bank/row -- this can break gang cohesion and perturb row,
+    // unlike memsim's plain DRAM_MAP_MOP.
+    uns64 my_channel_id = lineaddr % d->num_channels;
+    uns64 addr = lineaddr / d->num_channels;
+
+    uns64 col_lo = addr % 4; // low 2 bits: which of the 4 gang lines
+    addr = addr / 4;
+
+    uns64 bankgroup_id = addr % DRAM_BANKGROUPS;
+    addr = addr / DRAM_BANKGROUPS;
+
+    uns64 bank_in_bg = addr % d->banks_in_bankgroup;
+    addr = addr / d->banks_in_bankgroup;
+
+    uns64 col_rem_count = d->lines_in_rowbuf / 4; // remaining column values
+    uns64 col_rem = addr % col_rem_count;
+    addr = addr / col_rem_count;
+
+    uns64 column = col_lo + (col_rem << 2);
+    uns64 row = addr; // whatever remains
+
+    // bit-widths of bankgroup/bank, needed as XOR shift amounts (both are
+    // powers of 2 in this config, same assumption the rest of dram.c makes)
+    uns64 bg_bits = 0; for(uns64 t=DRAM_BANKGROUPS; t>1; t>>=1) bg_bits++;
+    uns64 bank_bits = 0; for(uns64 t=d->banks_in_bankgroup; t>1; t>>=1) bank_bits++;
+
+    uns64 row_xor_index = 0;
+    bankgroup_id ^= (column >> row_xor_index) & ((1ULL<<bg_bits)-1);
+    row_xor_index += bg_bits;
+    bank_in_bg    ^= (column >> row_xor_index) & ((1ULL<<bank_bits)-1);
+    row_xor_index += bank_bits;
+    row           ^= (column >> row_xor_index); // remaining column bits (tiny; naturally fits)
+
+    *myrowbufid  = row;
+    *mybankid    = bankgroup_id * d->banks_in_bankgroup + bank_in_bg;
+    *mychannelid = my_channel_id;
+    return;
+  }
+
   assert(0); // other policy not implemented yet
 }
 

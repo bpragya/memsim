@@ -39,7 +39,8 @@ typedef enum DRAM_MappingPolicy_Enum {
     DRAM_MAP_RUBIX=4, // RUBIX MAPPING,
     DRAM_MAP_LINESTRIPE=5, // LINE STRIPE
     DRAM_MAP_ROBARACOCH=6, // Row-Bank-Rank-Column-Channel (matches Ramulator2's RoBaRaCoCh)
-    NUM_DRAM_MAP=7
+    DRAM_MAP_MOP4CLXOR=7,  // gang-of-4 + XOR scramble (matches Ramulator2's MOP4CLXOR)
+    NUM_DRAM_MAP=8
 } DRAM_MappingPolicy;
 
 
