@@ -10,35 +10,35 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/imagick_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 274623
+CORE_00_CYCLES       	 : 305667
 CORE_00_ACCESS       	 : 9659
 CORE_00_MISS         	 : 1850
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 9.66
 CORE_00_MPKI         	 : 1.85
 CORE_00_MISSRATE     	 : 19.15
-CORE_00_AVGDELAY     	 : 67.49
+CORE_00_AVGDELAY     	 : 136.50
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.641
+CORE_00_IPC          	 : 3.272
 
 L3CACHE_ACCESS       	 : 9659
 L3CACHE_MISS         	 : 1850
 L3CACHE_MISSRATE     	 : 19.153
 
-DRAM_ACT         	 : 1111
+DRAM_ACT         	 : 1141
 DRAM_REQ         	 : 1850
-DRAM_RBHR        	 : 39.95
-DRAM_AVG_SDELAY  	 : 57.95
-DRAM_AVG_WDELAY  	 : 8.72
-DRAM_AVG_TDELAY  	 : 66.67
-DRAM_AVG_BUSDELAY	 : 65.00
-DRAM_NUM_TREFI   	 : 17
+DRAM_RBHR        	 : 38.32
+DRAM_AVG_SDELAY  	 : 56.85
+DRAM_AVG_WDELAY  	 : 15.01
+DRAM_AVG_TDELAY  	 : 71.86
+DRAM_AVG_BUSDELAY	 : 65.13
+DRAM_NUM_TREFI   	 : 19
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 117
 
-SYS_CYCLES      	 : 274623
-AVG_CORE_CYCLES 	 : 274623
+SYS_CYCLES      	 : 305667
+AVG_CORE_CYCLES 	 : 305667
 
 

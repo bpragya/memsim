@@ -10,16 +10,16 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/deepsjeng_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 272981
+CORE_00_CYCLES       	 : 303808
 CORE_00_ACCESS       	 : 1693
 CORE_00_MISS         	 : 907
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 1.69
 CORE_00_MPKI         	 : 0.91
 CORE_00_MISSRATE     	 : 53.57
-CORE_00_AVGDELAY     	 : 91.68
+CORE_00_AVGDELAY     	 : 158.01
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.663
+CORE_00_IPC          	 : 3.292
 
 L3CACHE_ACCESS       	 : 1693
 L3CACHE_MISS         	 : 907
@@ -28,17 +28,17 @@ L3CACHE_MISSRATE     	 : 53.574
 DRAM_ACT         	 : 851
 DRAM_REQ         	 : 907
 DRAM_RBHR        	 : 6.17
-DRAM_AVG_SDELAY  	 : 69.03
-DRAM_AVG_WDELAY  	 : 22.19
-DRAM_AVG_TDELAY  	 : 91.22
-DRAM_AVG_BUSDELAY	 : 65.07
-DRAM_NUM_TREFI   	 : 17
+DRAM_AVG_SDELAY  	 : 68.09
+DRAM_AVG_WDELAY  	 : 25.46
+DRAM_AVG_TDELAY  	 : 93.55
+DRAM_AVG_BUSDELAY	 : 65.10
+DRAM_NUM_TREFI   	 : 19
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 294
 
-SYS_CYCLES      	 : 272981
-AVG_CORE_CYCLES 	 : 272981
+SYS_CYCLES      	 : 303808
+AVG_CORE_CYCLES 	 : 303808
 
 
