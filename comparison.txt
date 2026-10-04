@@ -14,11 +14,13 @@ Held the same on both sides:
   - Geometry:        2 channels x 32 banks (8 bank groups x 4), 1 rank, open page
   - Clock:           0.25 ns per cycle on both sides
   - DRAM timings:    DDR5_8000AN. The original model gets them as flags:
-                     -tRC 184 -tACT 56 -tCAS 56 -tPRE 56 -tRAS 128 -tRFC 1177 -tREFI 15600
+                     -tRC 184 -tACT 56 -tCAS 56 -tPRE 56 -tRAS 128 -tRFC 1177 -tREFI 15600 -tBUS 8
                      tCCDS/tCCDM/tCCDL = 8/16/20 (params.h defaults, same rules as Ramulator2)
+  - Read latency:    data returns tCAS+tBUS = 56+8 cycles after the RD is issued on both
+                     sides (Ramulator2 nCL+nBL)
 
-What still differs is how each model turns those timings into request latency -- see
-the Conclusion at the bottom.
+What still differs is the rest of each DRAM model's internals -- see the Conclusion at
+the bottom.
 
 How to read it:
   diff       = (ramulator2 - original) / original; positive CYCLES diff = ramulator2 slower
@@ -28,215 +30,213 @@ How to read it:
 
 
 === blender_17 ===  MPKI=7.02
-  CORE_00_CYCLES       original=336417       ramulator2=401381       diff=+19.31%
-  CORE_00_AVGDELAY     original=101.28       ramulator2=173.13       diff=+70.94%
-  CORE_00_IPC          original=2.973        ramulator2=2.491        diff=-16.21%
-  SYS_CYCLES           original=336417       ramulator2=401381       diff=+19.31%
-  AVG_CORE_CYCLES      original=336417       ramulator2=401381       diff=+19.31%
-  DRAM_ACT             original=5563         ramulator2=5586         diff=+0.41%
-  DRAM_RBHR            original=20.78        ramulator2=20.45        diff=-0.33 pts
+  CORE_00_CYCLES       original=401360       ramulator2=401381       diff=+0.01%
+  CORE_00_AVGDELAY     original=171.58       ramulator2=173.13       diff=+0.90%
+  CORE_00_IPC          original=2.492        ramulator2=2.491        diff=-0.04%
+  SYS_CYCLES           original=401360       ramulator2=401381       diff=+0.01%
+  AVG_CORE_CYCLES      original=401360       ramulator2=401381       diff=+0.01%
+  DRAM_ACT             original=5602         ramulator2=5586         diff=-0.29%
+  DRAM_RBHR            original=20.22        ramulator2=20.45        diff=+0.23 pts
 
 === bwaves_17 ===  MPKI=44.05
-  CORE_00_CYCLES       original=1003089      ramulator2=1189305      diff=+18.56%
-  CORE_00_AVGDELAY     original=177.91       ramulator2=235.59       diff=+32.42%
-  CORE_00_IPC          original=0.997        ramulator2=0.841        diff=-15.65%
-  SYS_CYCLES           original=1003089      ramulator2=1189305      diff=+18.56%
-  AVG_CORE_CYCLES      original=1003089      ramulator2=1189305      diff=+18.56%
-  DRAM_ACT             original=31504        ramulator2=31739        diff=+0.75%
-  DRAM_RBHR            original=28.47        ramulator2=27.92        diff=-0.55 pts
+  CORE_00_CYCLES       original=1152536      ramulator2=1189305      diff=+3.19%
+  CORE_00_AVGDELAY     original=246.39       ramulator2=235.59       diff=-4.38%
+  CORE_00_IPC          original=0.868        ramulator2=0.841        diff=-3.11%
+  SYS_CYCLES           original=1152536      ramulator2=1189305      diff=+3.19%
+  AVG_CORE_CYCLES      original=1152536      ramulator2=1189305      diff=+3.19%
+  DRAM_ACT             original=31905        ramulator2=31739        diff=-0.52%
+  DRAM_RBHR            original=27.56        ramulator2=27.92        diff=+0.36 pts
 
 === cactuBSSN_17 ===  MPKI=6.18
-  CORE_00_CYCLES       original=379568       ramulator2=417797       diff=+10.07%
-  CORE_00_AVGDELAY     original=197.22       ramulator2=252.76       diff=+28.16%
-  CORE_00_IPC          original=2.635        ramulator2=2.394        diff=-9.15%
-  SYS_CYCLES           original=379568       ramulator2=417797       diff=+10.07%
-  AVG_CORE_CYCLES      original=379568       ramulator2=417797       diff=+10.07%
-  DRAM_ACT             original=6098         ramulator2=6097         diff=-0.02%
-  DRAM_RBHR            original=1.36         ramulator2=1.37         diff=+0.01 pts
+  CORE_00_CYCLES       original=404384       ramulator2=417797       diff=+3.32%
+  CORE_00_AVGDELAY     original=244.42       ramulator2=252.76       diff=+3.41%
+  CORE_00_IPC          original=2.473        ramulator2=2.394        diff=-3.19%
+  SYS_CYCLES           original=404384       ramulator2=417797       diff=+3.32%
+  AVG_CORE_CYCLES      original=404384       ramulator2=417797       diff=+3.32%
+  DRAM_ACT             original=6100         ramulator2=6097         diff=-0.05%
+  DRAM_RBHR            original=1.33         ramulator2=1.37         diff=+0.04 pts
 
 === cam4_17 ===  MPKI=3.88
-  CORE_00_CYCLES       original=290077       ramulator2=327378       diff=+12.86%
-  CORE_00_AVGDELAY     original=87.06        ramulator2=155.38       diff=+78.47%
-  CORE_00_IPC          original=3.447        ramulator2=3.055        diff=-11.37%
-  SYS_CYCLES           original=290077       ramulator2=327378       diff=+12.86%
-  AVG_CORE_CYCLES      original=290077       ramulator2=327378       diff=+12.86%
-  DRAM_ACT             original=2609         ramulator2=2624         diff=+0.57%
-  DRAM_RBHR            original=32.71        ramulator2=32.32        diff=-0.39 pts
+  CORE_00_CYCLES       original=327572       ramulator2=327378       diff=-0.06%
+  CORE_00_AVGDELAY     original=155.52       ramulator2=155.38       diff=-0.09%
+  CORE_00_IPC          original=3.053        ramulator2=3.055        diff=+0.07%
+  SYS_CYCLES           original=327572       ramulator2=327378       diff=-0.06%
+  AVG_CORE_CYCLES      original=327572       ramulator2=327378       diff=-0.06%
+  DRAM_ACT             original=2627         ramulator2=2624         diff=-0.11%
+  DRAM_RBHR            original=32.24        ramulator2=32.32        diff=+0.08 pts
 
 === deepsjeng_17 ===  MPKI=0.91   (MPKI<1, excluded from summary)
-  CORE_00_CYCLES       original=272981       ramulator2=306486       diff=+12.27%
-  CORE_00_AVGDELAY     original=91.68        ramulator2=159.75       diff=+74.25%
-  CORE_00_IPC          original=3.663        ramulator2=3.263        diff=-10.92%
-  SYS_CYCLES           original=272981       ramulator2=306486       diff=+12.27%
-  AVG_CORE_CYCLES      original=272981       ramulator2=306486       diff=+12.27%
+  CORE_00_CYCLES       original=303808       ramulator2=306486       diff=+0.88%
+  CORE_00_AVGDELAY     original=158.01       ramulator2=159.75       diff=+1.10%
+  CORE_00_IPC          original=3.292        ramulator2=3.263        diff=-0.88%
+  SYS_CYCLES           original=303808       ramulator2=306486       diff=+0.88%
+  AVG_CORE_CYCLES      original=303808       ramulator2=306486       diff=+0.88%
   DRAM_ACT             original=851          ramulator2=850          diff=-0.12%
   DRAM_RBHR            original=6.17         ramulator2=6.28         diff=+0.11 pts
 
 === fotonik3d_17 ===  MPKI=25.42
-  CORE_00_CYCLES       original=662865       ramulator2=836726       diff=+26.23%
-  CORE_00_AVGDELAY     original=106.27       ramulator2=170.14       diff=+60.10%
-  CORE_00_IPC          original=1.509        ramulator2=1.195        diff=-20.81%
-  SYS_CYCLES           original=662865       ramulator2=836726       diff=+26.23%
-  AVG_CORE_CYCLES      original=662865       ramulator2=836726       diff=+26.23%
-  DRAM_ACT             original=18923        ramulator2=19208        diff=+1.51%
-  DRAM_RBHR            original=25.55        ramulator2=24.43        diff=-1.12 pts
+  CORE_00_CYCLES       original=825416       ramulator2=836726       diff=+1.37%
+  CORE_00_AVGDELAY     original=171.22       ramulator2=170.14       diff=-0.63%
+  CORE_00_IPC          original=1.212        ramulator2=1.195        diff=-1.40%
+  SYS_CYCLES           original=825416       ramulator2=836726       diff=+1.37%
+  AVG_CORE_CYCLES      original=825416       ramulator2=836726       diff=+1.37%
+  DRAM_ACT             original=19199        ramulator2=19208        diff=+0.05%
+  DRAM_RBHR            original=24.46        ramulator2=24.43        diff=-0.03 pts
 
 === gcc_17 ===  MPKI=3.66
-  CORE_00_CYCLES       original=303856       ramulator2=352482       diff=+16.00%
-  CORE_00_AVGDELAY     original=97.40        ramulator2=162.97       diff=+67.32%
-  CORE_00_IPC          original=3.291        ramulator2=2.837        diff=-13.80%
-  SYS_CYCLES           original=303856       ramulator2=352482       diff=+16.00%
-  AVG_CORE_CYCLES      original=303856       ramulator2=352482       diff=+16.00%
-  DRAM_ACT             original=2915         ramulator2=2917         diff=+0.07%
-  DRAM_RBHR            original=20.40        ramulator2=20.34        diff=-0.06 pts
+  CORE_00_CYCLES       original=352298       ramulator2=352482       diff=+0.05%
+  CORE_00_AVGDELAY     original=159.59       ramulator2=162.97       diff=+2.12%
+  CORE_00_IPC          original=2.839        ramulator2=2.837        diff=-0.07%
+  SYS_CYCLES           original=352298       ramulator2=352482       diff=+0.05%
+  AVG_CORE_CYCLES      original=352298       ramulator2=352482       diff=+0.05%
+  DRAM_ACT             original=2918         ramulator2=2917         diff=-0.03%
+  DRAM_RBHR            original=20.32        ramulator2=20.34        diff=+0.02 pts
 
 === imagick_17 ===  MPKI=1.85
-  CORE_00_CYCLES       original=274623       ramulator2=307439       diff=+11.95%
-  CORE_00_AVGDELAY     original=67.49        ramulator2=136.81       diff=+102.71%
-  CORE_00_IPC          original=3.641        ramulator2=3.253        diff=-10.66%
-  SYS_CYCLES           original=274623       ramulator2=307439       diff=+11.95%
-  AVG_CORE_CYCLES      original=274623       ramulator2=307439       diff=+11.95%
-  DRAM_ACT             original=1111         ramulator2=1138         diff=+2.43%
-  DRAM_RBHR            original=39.95        ramulator2=38.49        diff=-1.46 pts
+  CORE_00_CYCLES       original=305667       ramulator2=307439       diff=+0.58%
+  CORE_00_AVGDELAY     original=136.50       ramulator2=136.81       diff=+0.23%
+  CORE_00_IPC          original=3.272        ramulator2=3.253        diff=-0.58%
+  SYS_CYCLES           original=305667       ramulator2=307439       diff=+0.58%
+  AVG_CORE_CYCLES      original=305667       ramulator2=307439       diff=+0.58%
+  DRAM_ACT             original=1141         ramulator2=1138         diff=-0.26%
+  DRAM_RBHR            original=38.32        ramulator2=38.49        diff=+0.17 pts
 
 === lbm_17 ===  MPKI=25.59
-  CORE_00_CYCLES       original=586633       ramulator2=739949       diff=+26.13%
-  CORE_00_AVGDELAY     original=86.70        ramulator2=152.71       diff=+76.14%
-  CORE_00_IPC          original=1.705        ramulator2=1.351        diff=-20.76%
-  SYS_CYCLES           original=586633       ramulator2=739949       diff=+26.13%
-  AVG_CORE_CYCLES      original=586633       ramulator2=739949       diff=+26.13%
-  DRAM_ACT             original=15196        ramulator2=15356        diff=+1.05%
-  DRAM_RBHR            original=40.62        ramulator2=39.99        diff=-0.63 pts
+  CORE_00_CYCLES       original=734711       ramulator2=739949       diff=+0.71%
+  CORE_00_AVGDELAY     original=155.31       ramulator2=152.71       diff=-1.67%
+  CORE_00_IPC          original=1.361        ramulator2=1.351        diff=-0.73%
+  SYS_CYCLES           original=734711       ramulator2=739949       diff=+0.71%
+  AVG_CORE_CYCLES      original=734711       ramulator2=739949       diff=+0.71%
+  DRAM_ACT             original=15390        ramulator2=15356        diff=-0.22%
+  DRAM_RBHR            original=39.86        ramulator2=39.99        diff=+0.13 pts
 
 === leela_17 ===  MPKI=1.61
-  CORE_00_CYCLES       original=278135       ramulator2=307068       diff=+10.40%
-  CORE_00_AVGDELAY     original=111.85       ramulator2=160.47       diff=+43.47%
-  CORE_00_IPC          original=3.595        ramulator2=3.257        diff=-9.40%
-  SYS_CYCLES           original=278135       ramulator2=307068       diff=+10.40%
-  AVG_CORE_CYCLES      original=278135       ramulator2=307068       diff=+10.40%
-  DRAM_ACT             original=1162         ramulator2=1155         diff=-0.60%
-  DRAM_RBHR            original=27.92        ramulator2=28.35        diff=+0.43 pts
+  CORE_00_CYCLES       original=307036       ramulator2=307068       diff=+0.01%
+  CORE_00_AVGDELAY     original=161.46       ramulator2=160.47       diff=-0.61%
+  SYS_CYCLES           original=307036       ramulator2=307068       diff=+0.01%
+  AVG_CORE_CYCLES      original=307036       ramulator2=307068       diff=+0.01%
+  DRAM_ACT             original=1150         ramulator2=1155         diff=+0.43%
+  DRAM_RBHR            original=28.66        ramulator2=28.35        diff=-0.31 pts
 
 === mcf_17 ===  MPKI=25.63
-  CORE_00_CYCLES       original=471763       ramulator2=546808       diff=+15.91%
-  CORE_00_AVGDELAY     original=103.87       ramulator2=164.67       diff=+58.53%
-  CORE_00_IPC          original=2.120        ramulator2=1.829        diff=-13.73%
-  SYS_CYCLES           original=471763       ramulator2=546808       diff=+15.91%
-  AVG_CORE_CYCLES      original=471763       ramulator2=546808       diff=+15.91%
-  DRAM_ACT             original=16157        ramulator2=16181        diff=+0.15%
-  DRAM_RBHR            original=36.95        ramulator2=36.86        diff=-0.09 pts
+  CORE_00_CYCLES       original=547892       ramulator2=546808       diff=-0.20%
+  CORE_00_AVGDELAY     original=166.97       ramulator2=164.67       diff=-1.38%
+  CORE_00_IPC          original=1.825        ramulator2=1.829        diff=+0.22%
+  SYS_CYCLES           original=547892       ramulator2=546808       diff=-0.20%
+  AVG_CORE_CYCLES      original=547892       ramulator2=546808       diff=-0.20%
+  DRAM_ACT             original=16296        ramulator2=16181        diff=-0.71%
+  DRAM_RBHR            original=36.41        ramulator2=36.86        diff=+0.45 pts
 
 === nab_17 ===  MPKI=3.24
-  CORE_00_CYCLES       original=305979       ramulator2=365572       diff=+19.48%
-  CORE_00_AVGDELAY     original=69.57        ramulator2=137.01       diff=+96.94%
-  CORE_00_IPC          original=3.268        ramulator2=2.735        diff=-16.31%
-  SYS_CYCLES           original=305979       ramulator2=365572       diff=+19.48%
-  AVG_CORE_CYCLES      original=305979       ramulator2=365572       diff=+19.48%
-  DRAM_ACT             original=1970         ramulator2=2013         diff=+2.18%
-  DRAM_RBHR            original=39.20        ramulator2=37.87        diff=-1.33 pts
+  CORE_00_CYCLES       original=364859       ramulator2=365572       diff=+0.20%
+  CORE_00_AVGDELAY     original=135.47       ramulator2=137.01       diff=+1.14%
+  CORE_00_IPC          original=2.741        ramulator2=2.735        diff=-0.22%
+  SYS_CYCLES           original=364859       ramulator2=365572       diff=+0.20%
+  AVG_CORE_CYCLES      original=364859       ramulator2=365572       diff=+0.20%
+  DRAM_ACT             original=2009         ramulator2=2013         diff=+0.20%
+  DRAM_RBHR            original=37.99        ramulator2=37.87        diff=-0.12 pts
 
 === namd_17 ===  MPKI=2.01
-  CORE_00_CYCLES       original=281522       ramulator2=318336       diff=+13.08%
-  CORE_00_AVGDELAY     original=95.41        ramulator2=151.56       diff=+58.85%
-  CORE_00_IPC          original=3.552        ramulator2=3.141        diff=-11.57%
-  SYS_CYCLES           original=281522       ramulator2=318336       diff=+13.08%
-  AVG_CORE_CYCLES      original=281522       ramulator2=318336       diff=+13.08%
-  DRAM_ACT             original=1387         ramulator2=1398         diff=+0.79%
-  DRAM_RBHR            original=31.13        ramulator2=30.59        diff=-0.54 pts
+  CORE_00_CYCLES       original=315871       ramulator2=318336       diff=+0.78%
+  CORE_00_AVGDELAY     original=147.75       ramulator2=151.56       diff=+2.58%
+  CORE_00_IPC          original=3.166        ramulator2=3.141        diff=-0.79%
+  SYS_CYCLES           original=315871       ramulator2=318336       diff=+0.78%
+  AVG_CORE_CYCLES      original=315871       ramulator2=318336       diff=+0.78%
+  DRAM_ACT             original=1401         ramulator2=1398         diff=-0.21%
+  DRAM_RBHR            original=30.44        ramulator2=30.59        diff=+0.15 pts
 
 === omnetpp_17 ===  MPKI=12.94
-  CORE_00_CYCLES       original=439712       ramulator2=554997       diff=+26.22%
-  CORE_00_AVGDELAY     original=127.86       ramulator2=188.55       diff=+47.47%
-  CORE_00_IPC          original=2.274        ramulator2=1.802        diff=-20.76%
-  SYS_CYCLES           original=439712       ramulator2=554997       diff=+26.22%
-  AVG_CORE_CYCLES      original=439712       ramulator2=554997       diff=+26.22%
-  DRAM_ACT             original=11718        ramulator2=11726        diff=+0.07%
-  DRAM_RBHR            original=9.44         ramulator2=9.38         diff=-0.06 pts
+  CORE_00_CYCLES       original=552090       ramulator2=554997       diff=+0.53%
+  CORE_00_AVGDELAY     original=188.53       ramulator2=188.55       diff=+0.01%
+  CORE_00_IPC          original=1.811        ramulator2=1.802        diff=-0.50%
+  SYS_CYCLES           original=552090       ramulator2=554997       diff=+0.53%
+  AVG_CORE_CYCLES      original=552090       ramulator2=554997       diff=+0.53%
+  DRAM_ACT             original=11740        ramulator2=11726        diff=-0.12%
+  DRAM_RBHR            original=9.27         ramulator2=9.38         diff=+0.11 pts
 
 === parest_17 ===  MPKI=37.59
-  CORE_00_CYCLES       original=537746       ramulator2=714173       diff=+32.81%
-  CORE_00_AVGDELAY     original=96.75        ramulator2=162.18       diff=+67.63%
-  CORE_00_IPC          original=1.860        ramulator2=1.400        diff=-24.73%
-  SYS_CYCLES           original=537746       ramulator2=714173       diff=+32.81%
-  AVG_CORE_CYCLES      original=537746       ramulator2=714173       diff=+32.81%
-  DRAM_ACT             original=22411        ramulator2=22530        diff=+0.53%
-  DRAM_RBHR            original=40.39        ramulator2=40.07        diff=-0.32 pts
+  CORE_00_CYCLES       original=710909       ramulator2=714173       diff=+0.46%
+  CORE_00_AVGDELAY     original=160.30       ramulator2=162.18       diff=+1.17%
+  CORE_00_IPC          original=1.407        ramulator2=1.400        diff=-0.50%
+  SYS_CYCLES           original=710909       ramulator2=714173       diff=+0.46%
+  AVG_CORE_CYCLES      original=710909       ramulator2=714173       diff=+0.46%
+  DRAM_ACT             original=22592        ramulator2=22530        diff=-0.27%
+  DRAM_RBHR            original=39.90        ramulator2=40.07        diff=+0.17 pts
 
 === perlbench_17 ===  MPKI=0.11   (MPKI<1, excluded from summary)
-  CORE_00_CYCLES       original=252012       ramulator2=254403       diff=+0.95%
-  CORE_00_AVGDELAY     original=92.57        ramulator2=153.02       diff=+65.30%
-  CORE_00_IPC          original=3.968        ramulator2=3.931        diff=-0.93%
-  SYS_CYCLES           original=252012       ramulator2=254403       diff=+0.95%
-  AVG_CORE_CYCLES      original=252012       ramulator2=254403       diff=+0.95%
+  CORE_00_CYCLES       original=254362       ramulator2=254403       diff=+0.02%
+  CORE_00_AVGDELAY     original=152.86       ramulator2=153.02       diff=+0.10%
+  SYS_CYCLES           original=254362       ramulator2=254403       diff=+0.02%
+  AVG_CORE_CYCLES      original=254362       ramulator2=254403       diff=+0.02%
   DRAM_ACT             original=100          ramulator2=100          diff=+0.00%
   DRAM_RBHR            original=5.66         ramulator2=5.66         diff=+0.00 pts
 
 === povray_17 ===  MPKI=1.62
-  CORE_00_CYCLES       original=274039       ramulator2=290885       diff=+6.15%
-  CORE_00_AVGDELAY     original=111.35       ramulator2=158.87       diff=+42.68%
-  CORE_00_IPC          original=3.649        ramulator2=3.438        diff=-5.78%
-  SYS_CYCLES           original=274039       ramulator2=290885       diff=+6.15%
-  AVG_CORE_CYCLES      original=274039       ramulator2=290885       diff=+6.15%
-  DRAM_ACT             original=1337         ramulator2=1332         diff=-0.37%
-  DRAM_RBHR            original=17.26        ramulator2=17.57        diff=+0.31 pts
+  CORE_00_CYCLES       original=290860       ramulator2=290885       diff=+0.01%
+  CORE_00_AVGDELAY     original=159.52       ramulator2=158.87       diff=-0.41%
+  SYS_CYCLES           original=290860       ramulator2=290885       diff=+0.01%
+  AVG_CORE_CYCLES      original=290860       ramulator2=290885       diff=+0.01%
+  DRAM_ACT             original=1333         ramulator2=1332         diff=-0.08%
+  DRAM_RBHR            original=17.51        ramulator2=17.57        diff=+0.06 pts
 
 === roms_17 ===  MPKI=22.73
-  CORE_00_CYCLES       original=462277       ramulator2=591875       diff=+28.03%
-  CORE_00_AVGDELAY     original=76.73        ramulator2=141.11       diff=+83.90%
-  CORE_00_IPC          original=2.163        ramulator2=1.690        diff=-21.87%
-  SYS_CYCLES           original=462277       ramulator2=591875       diff=+28.03%
-  AVG_CORE_CYCLES      original=462277       ramulator2=591875       diff=+28.03%
-  DRAM_ACT             original=12168        ramulator2=12229        diff=+0.50%
-  DRAM_RBHR            original=46.47        ramulator2=46.20        diff=-0.27 pts
+  CORE_00_CYCLES       original=591961       ramulator2=591875       diff=-0.01%
+  CORE_00_AVGDELAY     original=141.79       ramulator2=141.11       diff=-0.48%
+  CORE_00_IPC          original=1.689        ramulator2=1.690        diff=+0.06%
+  SYS_CYCLES           original=591961       ramulator2=591875       diff=-0.01%
+  AVG_CORE_CYCLES      original=591961       ramulator2=591875       diff=-0.01%
+  DRAM_ACT             original=12290        ramulator2=12229        diff=-0.50%
+  DRAM_RBHR            original=45.93        ramulator2=46.20        diff=+0.27 pts
 
 === wrf_17 ===  MPKI=3.32
-  CORE_00_CYCLES       original=314714       ramulator2=387611       diff=+23.16%
-  CORE_00_AVGDELAY     original=84.48        ramulator2=150.52       diff=+78.17%
-  CORE_00_IPC          original=3.177        ramulator2=2.580        diff=-18.79%
-  SYS_CYCLES           original=314714       ramulator2=387611       diff=+23.16%
-  AVG_CORE_CYCLES      original=314714       ramulator2=387611       diff=+23.16%
-  DRAM_ACT             original=2498         ramulator2=2552         diff=+2.16%
-  DRAM_RBHR            original=24.87        ramulator2=23.25        diff=-1.62 pts
+  CORE_00_CYCLES       original=386198       ramulator2=387611       diff=+0.37%
+  CORE_00_AVGDELAY     original=150.47       ramulator2=150.52       diff=+0.03%
+  CORE_00_IPC          original=2.589        ramulator2=2.580        diff=-0.35%
+  SYS_CYCLES           original=386198       ramulator2=387611       diff=+0.37%
+  AVG_CORE_CYCLES      original=386198       ramulator2=387611       diff=+0.37%
+  DRAM_ACT             original=2562         ramulator2=2552         diff=-0.39%
+  DRAM_RBHR            original=22.95        ramulator2=23.25        diff=+0.30 pts
 
 === x264_17 ===  MPKI=0.20   (MPKI<1, excluded from summary)
-  CORE_00_CYCLES       original=254498       ramulator2=258613       diff=+1.62%
-  CORE_00_AVGDELAY     original=123.86       ramulator2=194.98       diff=+57.42%
-  CORE_00_IPC          original=3.929        ramulator2=3.867        diff=-1.58%
-  SYS_CYCLES           original=254498       ramulator2=258613       diff=+1.62%
-  AVG_CORE_CYCLES      original=254498       ramulator2=258613       diff=+1.62%
+  CORE_00_CYCLES       original=258561       ramulator2=258613       diff=+0.02%
+  CORE_00_AVGDELAY     original=193.02       ramulator2=194.98       diff=+1.02%
+  CORE_00_IPC          original=3.868        ramulator2=3.867        diff=-0.03%
+  SYS_CYCLES           original=258561       ramulator2=258613       diff=+0.02%
+  AVG_CORE_CYCLES      original=258561       ramulator2=258613       diff=+0.02%
   DRAM_ACT             original=194          ramulator2=194          diff=+0.00%
   DRAM_RBHR            original=3.48         ramulator2=3.48         diff=+0.00 pts
 
 === xalancbmk_17 ===  MPKI=4.35
-  CORE_00_CYCLES       original=299607       ramulator2=350141       diff=+16.87%
-  CORE_00_AVGDELAY     original=130.98       ramulator2=190.03       diff=+45.08%
-  CORE_00_IPC          original=3.338        ramulator2=2.856        diff=-14.44%
-  SYS_CYCLES           original=299607       ramulator2=350141       diff=+16.87%
-  AVG_CORE_CYCLES      original=299607       ramulator2=350141       diff=+16.87%
-  DRAM_ACT             original=3308         ramulator2=3331         diff=+0.70%
-  DRAM_RBHR            original=23.88        ramulator2=23.35        diff=-0.53 pts
+  CORE_00_CYCLES       original=350126       ramulator2=350141       diff=+0.00%
+  CORE_00_AVGDELAY     original=190.79       ramulator2=190.03       diff=-0.40%
+  SYS_CYCLES           original=350126       ramulator2=350141       diff=+0.00%
+  AVG_CORE_CYCLES      original=350126       ramulator2=350141       diff=+0.00%
+  DRAM_ACT             original=3332         ramulator2=3331         diff=-0.03%
+  DRAM_RBHR            original=23.33        ramulator2=23.35        diff=+0.02 pts
 
 === xz_17 ===  MPKI=8.36
-  CORE_00_CYCLES       original=399677       ramulator2=491952       diff=+23.09%
-  CORE_00_AVGDELAY     original=126.16       ramulator2=188.21       diff=+49.18%
-  CORE_00_IPC          original=2.502        ramulator2=2.033        diff=-18.75%
-  SYS_CYCLES           original=399677       ramulator2=491952       diff=+23.09%
-  AVG_CORE_CYCLES      original=399677       ramulator2=491952       diff=+23.09%
-  DRAM_ACT             original=8208         ramulator2=8190         diff=-0.22%
-  DRAM_RBHR            original=1.79         ramulator2=2.01         diff=+0.22 pts
+  CORE_00_CYCLES       original=490246       ramulator2=491952       diff=+0.35%
+  CORE_00_AVGDELAY     original=186.40       ramulator2=188.21       diff=+0.97%
+  CORE_00_IPC          original=2.040        ramulator2=2.033        diff=-0.34%
+  SYS_CYCLES           original=490246       ramulator2=491952       diff=+0.35%
+  AVG_CORE_CYCLES      original=490246       ramulator2=491952       diff=+0.35%
+  DRAM_ACT             original=8194         ramulator2=8190         diff=-0.05%
+  DRAM_RBHR            original=1.96         ramulator2=2.01         diff=+0.05 pts
 
 Summary (19 traces with MPKI>=1):
-  SYS_CYCLES: original is faster than ramulator2 on every trace, by 5.8% to 24.7% (mean 15.5%)
-  AVGDELAY:   ramulator2 per-miss delay is 48 to 72 cycles higher (mean 62)
-  DRAM_RBHR:  within 1.62 pts on every trace (mean 0.54 pts); DRAM_ACT within 2.4% (mean 0.8%)
+  SYS_CYCLES diff: -0.20% to +3.32% (mean +0.61%), within 1% on 16 of 19
+  AVGDELAY:        ramulator2 - original = -11 to +8 cycles per miss (mean +0.1)
+  DRAM_RBHR:       within 0.45 pts on every trace (mean 0.16 pts)
+  DRAM_ACT:        within 0.7% on every trace (mean 0.2%)
 
 Conclusion:
-Both simulators open and close rows the same way -- activation counts and row-buffer hit
-rates match almost exactly, which confirms the MOP4CLXOR port in dram.c is bit-for-bit
-equivalent to Ramulator2's mapper. The remaining gap is a near-constant ~60-70 cycles per
-miss: the original model wakes the core when a read wins the data bus and never adds
-CAS latency (tCAS/nCL=56) or the burst (nBL=8). Ramulator2 returns data nCL+nBL=64 cycles
-after the RD command. In a scratch build that delays read completion by tCAS+8, the
-original model lands within 0.9% of ramulator2 on 19 of 22 traces; the rest (bwaves,
-cactuBSSN, fotonik3d -- high-bandwidth / row-conflict heavy) stay 1.3-3.2% faster,
-consistent with ACT-rate limits the original model doesn't enforce (nRRDS/nRRDL, nFAW=32).
+The two DRAM models now agree closely. Row-buffer behaviour matches (same MOP4CLXOR
+mapping, same activations), and with CAS latency + burst added to the original model's
+read path (tCAS+tBUS after the RD is issued, matching Ramulator2's nCL+nBL) the ~62
+cycle/miss gap seen before is gone.
+
+Remaining gap: bwaves (+3.2%), cactuBSSN (+3.3%) and fotonik3d (+1.4%) are still faster
+in the original model. These are the most activation-heavy traces (bwaves/fotonik3d by
+volume, cactuBSSN at ~1% row hit rate), which points at activation-rate limits the
+original model doesn't enforce the way Ramulator2 does (nRRDS/nRRDL, nFAW=32, one
+command per cycle on the command bus). Not yet tested.
