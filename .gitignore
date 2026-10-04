@@ -1,0 +1,16 @@
+# Build outputs
+src/sim
+src/sim.exe
+src/*.dll
+src/*.o
+src/build_attempt*.log
+
+# Ramulator2 build directory (built separately, not committed)
+third_party/ramulator2/build/
+
+# Simulation results
+RESULTS/
+
+# Generated Ramulator2 YAML configs (regenerate via SCRIPTS/ramulator2_config.py)
+src/*.yaml
+src/*.yml
