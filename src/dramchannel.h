@@ -5,10 +5,12 @@
 #include "drambank.h"
 
 #define NUM_DRAM_BUSQ_ENTRIES 128
+#define NUM_DRAM_RDRETQ_ENTRIES 256 // >= tCAS+tBUS+1 (at most one RD issued per cycle)
 
 
 typedef struct DRAM_Channel   DRAM_Channel;
 typedef struct DRAM_BusQ DRAM_BusQ;
+typedef struct DRAM_RdRetQ DRAM_RdRetQ;
 typedef struct DRAM_BusQ_Entry DRAM_BusQ_Entry;
 
 typedef struct DRAM_TFAW_Token DRAM_TFAW_Token;
@@ -28,6 +30,16 @@ struct DRAM_BusQ_Entry{
 struct DRAM_BusQ{
   DRAM_BusQ_Entry entries[NUM_DRAM_BUSQ_ENTRIES];
   uns size; //  num valid entries
+};
+
+
+// reads issued on the bus, waiting tCAS+tBUS for data to return to the core
+// FIFO is exact: every read gets the same latency and issue order is monotonic
+struct DRAM_RdRetQ{
+  Addr  lineaddr[NUM_DRAM_RDRETQ_ENTRIES];
+  uns64 done_time[NUM_DRAM_RDRETQ_ENTRIES];
+  uns   head; // oldest entry
+  uns   size; // num valid entries
 };
 
 
@@ -58,6 +70,7 @@ struct DRAM_Channel {
 
     DRAM_Bank   *bank[32]; // max of 32 banks per channel
     DRAM_BusQ   dbusq; // DRAM bus queue
+    DRAM_RdRetQ rdretq; // reads in flight on the bus (tCAS+tBUS)
 
     DRAM_TFAW_Token  tfaw_token;
     DRAM_RDWR_Token  rdwr_token;
@@ -79,6 +92,7 @@ uns     dram_channel_insert(DRAM_Channel *c, uns bankid,  DRAM_ReqType type, uns
 
 void   dram_channel_insert_rdwrq(DRAM_Channel *c, uns bankid, DRAM_ReqType reqtype, Addr lineaddr, uns64 ready_time);
 void   dram_channel_schedule_rdwrq(DRAM_Channel *c);
+void   dram_channel_return_reads(DRAM_Channel *c);
 
 
 Flag   dram_channel_get_tfaw_token(DRAM_Channel *c, uns64 in_cycle);

@@ -45,7 +45,7 @@ uns64       tRAS=32*4;
 uns64       tCCDS=8;  // RD-to-RD, different bank group (Ramulator2 nCCDS, rank level)
 uns64       tCCDL=20; // RD-to-RD, same bank (Ramulator2 nCCDL, bank level)
 uns64       tCCDM=16; // RD-to-RD, other bank in same bank group (Ramulator2 nCCDM, bank sibling)
-uns64       tBUS=13;
+uns64       tBUS=13;  // data burst on the bus; read data arrives tCAS+tBUS after RD issue (Ramulator2 nBL)
 
 uns64       tRFC=410*4;
 uns64       tREFI=3900*4;
@@ -279,6 +279,13 @@ void read_params(int argc, char **argv){
 	    else if (!strcmp(argv[ii], "-tCAS")) {
 	        if (ii < argc - 1) {		  
 		    tCAS = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-tBUS")) {
+	        if (ii < argc - 1) {
+		    tBUS = atoi(argv[ii+1]);
 		    ii += 1;
 		}
 	    }

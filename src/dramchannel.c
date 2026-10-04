@@ -95,6 +95,7 @@ void dram_channel_rfmsb(DRAM_Channel *c){
 void  dram_channel_cycle(DRAM_Channel *c){
   uns ii;
 
+  dram_channel_return_reads(c);
   dram_channel_schedule_rdwrq(c);
 
   for(ii=0; ii<c->num_banks; ii++){
@@ -159,7 +160,12 @@ void   dram_channel_schedule_rdwrq(DRAM_Channel *c){
 	  uns64 rdwr_bus_delay = tCAS+ccd_delay;
 
 	  if(c->dbusq.entries[index].reqtype == DRAM_REQ_RD){
-	    memsys_callback(memsys, c->dbusq.entries[index].lineaddr);
+	    // data returns to the core tCAS+tBUS after the RD is issued
+	    assert(c->rdretq.size < NUM_DRAM_RDRETQ_ENTRIES);
+	    uns tail = (c->rdretq.head + c->rdretq.size) % NUM_DRAM_RDRETQ_ENTRIES;
+	    c->rdretq.lineaddr[tail]  = c->dbusq.entries[index].lineaddr;
+	    c->rdretq.done_time[tail] = cycle + tCAS + tBUS;
+	    c->rdretq.size++;
 	  }
 	  c->s_bus_time += rdwr_bus_delay;
 	  c->dbusq.size--;
@@ -171,6 +177,18 @@ void   dram_channel_schedule_rdwrq(DRAM_Channel *c){
     }
   }
 
+}
+
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+void   dram_channel_return_reads(DRAM_Channel *c){
+  while(c->rdretq.size > 0 && cycle >= c->rdretq.done_time[c->rdretq.head]){
+    memsys_callback(memsys, c->rdretq.lineaddr[c->rdretq.head]);
+    c->rdretq.head = (c->rdretq.head + 1) % NUM_DRAM_RDRETQ_ENTRIES;
+    c->rdretq.size--;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////
