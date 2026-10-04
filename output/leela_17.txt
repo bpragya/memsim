@@ -10,35 +10,35 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/leela_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 270698
+CORE_00_CYCLES       	 : 278135
 CORE_00_ACCESS       	 : 4112
 CORE_00_MISS         	 : 1612
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 4.11
 CORE_00_MPKI         	 : 1.61
 CORE_00_MISSRATE     	 : 39.20
-CORE_00_AVGDELAY     	 : 110.68
+CORE_00_AVGDELAY     	 : 111.85
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.694
+CORE_00_IPC          	 : 3.595
 
 L3CACHE_ACCESS       	 : 4112
 L3CACHE_MISS         	 : 1612
 L3CACHE_MISSRATE     	 : 39.202
 
-DRAM_ACT         	 : 678
+DRAM_ACT         	 : 1162
 DRAM_REQ         	 : 1612
-DRAM_RBHR        	 : 57.94
-DRAM_AVG_SDELAY  	 : 33.80
-DRAM_AVG_WDELAY  	 : 69.45
-DRAM_AVG_TDELAY  	 : 103.25
-DRAM_AVG_BUSDELAY	 : 70.29
+DRAM_RBHR        	 : 27.92
+DRAM_AVG_SDELAY  	 : 65.92
+DRAM_AVG_WDELAY  	 : 39.99
+DRAM_AVG_TDELAY  	 : 105.91
+DRAM_AVG_BUSDELAY	 : 64.88
 DRAM_NUM_TREFI   	 : 17
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 196
 
-SYS_CYCLES      	 : 270698
-AVG_CORE_CYCLES 	 : 270698
+SYS_CYCLES      	 : 278135
+AVG_CORE_CYCLES 	 : 278135
 
 

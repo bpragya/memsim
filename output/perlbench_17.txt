@@ -10,35 +10,35 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/perlbench_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 251963
+CORE_00_CYCLES       	 : 252012
 CORE_00_ACCESS       	 : 107
 CORE_00_MISS         	 : 106
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 0.11
 CORE_00_MPKI         	 : 0.11
 CORE_00_MISSRATE     	 : 99.07
-CORE_00_AVGDELAY     	 : 77.54
+CORE_00_AVGDELAY     	 : 92.57
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.969
+CORE_00_IPC          	 : 3.968
 
 L3CACHE_ACCESS       	 : 107
 L3CACHE_MISS         	 : 106
 L3CACHE_MISSRATE     	 : 99.065
 
-DRAM_ACT         	 : 65
+DRAM_ACT         	 : 100
 DRAM_REQ         	 : 106
-DRAM_RBHR        	 : 38.68
-DRAM_AVG_SDELAY  	 : 41.69
-DRAM_AVG_WDELAY  	 : 28.42
-DRAM_AVG_TDELAY  	 : 70.10
-DRAM_AVG_BUSDELAY	 : 71.92
+DRAM_RBHR        	 : 5.66
+DRAM_AVG_SDELAY  	 : 74.62
+DRAM_AVG_WDELAY  	 : 16.26
+DRAM_AVG_TDELAY  	 : 90.89
+DRAM_AVG_BUSDELAY	 : 65.13
 DRAM_NUM_TREFI   	 : 16
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 49
 
-SYS_CYCLES      	 : 251963
-AVG_CORE_CYCLES 	 : 251963
+SYS_CYCLES      	 : 252012
+AVG_CORE_CYCLES 	 : 252012
 
 

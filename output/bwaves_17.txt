@@ -1,7 +1,7 @@
 Initialized OS for 8388608 pages
 Size: 32 GB Channels: 2 and BanksPerChannel: 32
 
-   0 M	(INST:     0 M,) 
+   0 M	(INST:     0 M,) .
 
 ------------------------------------
 ------  MEMSIM.V1.1  ----------
@@ -10,35 +10,35 @@ Size: 32 GB Channels: 2 and BanksPerChannel: 32
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/bwaves_17.mtf.gz
 CORE_00_INST         	 : 1000000
-CORE_00_CYCLES       	 : 755027
+CORE_00_CYCLES       	 : 1003089
 CORE_00_ACCESS       	 : 49216
 CORE_00_MISS         	 : 44045
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 49.22
 CORE_00_MPKI         	 : 44.05
 CORE_00_MISSRATE     	 : 89.49
-CORE_00_AVGDELAY     	 : 123.24
+CORE_00_AVGDELAY     	 : 177.91
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 1.324
+CORE_00_IPC          	 : 0.997
 
 L3CACHE_ACCESS       	 : 49216
 L3CACHE_MISS         	 : 44045
 L3CACHE_MISSRATE     	 : 89.493
 
-DRAM_ACT         	 : 8860
+DRAM_ACT         	 : 31504
 DRAM_REQ         	 : 44045
-DRAM_RBHR        	 : 79.88
-DRAM_AVG_SDELAY  	 : 23.21
-DRAM_AVG_WDELAY  	 : 51.39
-DRAM_AVG_TDELAY  	 : 74.61
-DRAM_AVG_BUSDELAY	 : 72.73
-DRAM_NUM_TREFI   	 : 48
+DRAM_RBHR        	 : 28.47
+DRAM_AVG_SDELAY  	 : 86.89
+DRAM_AVG_WDELAY  	 : 78.41
+DRAM_AVG_TDELAY  	 : 165.29
+DRAM_AVG_BUSDELAY	 : 65.68
+DRAM_NUM_TREFI   	 : 64
 DRAM_NUM_TREFW   	 : 0
 DRAM_RFM         	 : 0
 
 OS_PAGE_MISS       	 : 698
 
-SYS_CYCLES      	 : 755027
-AVG_CORE_CYCLES 	 : 755027
+SYS_CYCLES      	 : 1003089
+AVG_CORE_CYCLES 	 : 1003089
 
 
