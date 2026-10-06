@@ -63,6 +63,7 @@ uns64       DRAM_MAX_TOPEN   = 3900*5; // with refresh postponement
 uns64       MEM_RSRV_MB      = 0; // reserving memory for metadata (e.g. CRA)
 
 uns64       RAND_SEED       = 1234;
+uns64       CHECKMAP_LINES  = 0;  // -checkmap N: print the DRAM mapping of N lines and exit
 
 char        RAMULATOR_CONFIG_PATH[1024] = "ramulator2_config.yaml";
 
@@ -88,6 +89,7 @@ void die_usage() {
     printf("               -l3assoc     <num>    Set L3  Cache assoc <num> (Default: 16)\n");
     printf("               -l3perfect            Set L3  to 100 percent hit rate(Default:off)\n");
     printf("               -llcmshrs    <num>    Max outstanding LLC misses, all cores (Default: 0 = unlimited)\n");
+    printf("               -checkmap    <num>    Print the DRAM bank mapping of <num> lines and exit\n");
     printf("               -wbbufsize   <num>    Writebacks waiting for a DRAM write-queue slot before reads stall (Default: 32)\n");
     printf("               -memclosepage         Set DRAM to close page (Default:off)\n");
     printf("               -ramulatorconfig <path> Path to Ramulator2 YAML config (Default: ramulator2_config.yaml)\n");
@@ -181,6 +183,13 @@ void read_params(int argc, char **argv){
 		}
 	    }
 
+
+	    else if (!strcmp(argv[ii], "-checkmap")) {
+		if (ii < argc - 1) {
+		    CHECKMAP_LINES = atoll(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
 
 	    else if (!strcmp(argv[ii], "-llcmshrs")) {
 		if (ii < argc - 1) {
@@ -408,6 +417,9 @@ void read_params(int argc, char **argv){
     //--------------------------------------------------------------------
     // Error checking
     //--------------------------------------------------------------------
+    if (num_threads==0 && CHECKMAP_LINES) {
+	num_threads = 1;  // -checkmap only maps addresses; no trace is read
+    }
     if (num_threads==0) {
 	die_message("Must provide valid at least one addr_trace");
     }

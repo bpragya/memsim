@@ -22,8 +22,18 @@ mkdir -p $OUT
 
 g++ -O2 -std=c++20 -I$RAM2/src $DIR/map_check.cpp -o $OUT/map_check -L$RAM2 -lramulator -Wl,-rpath,$RAM2
 
+RUNS=$HOME/build/runs   # WSL's /tmp is wiped when WSL idles
+mkdir -p $RUNS
 for cfg in zen_pbpl:1 zen:0; do
   name=${cfg%%:*}; pbpl=${cfg##*:}
-  $OUT/map_check $DIR/${name}_x4.yaml $N > /tmp/map_${name}_x4.txt
-  python3 $DIR/zen_ref.py /tmp/map_${name}_x4.txt $pbpl
+  echo "== Ramulator2 mapper ($name, x4)"
+  $OUT/map_check $DIR/${name}_x4.yaml $N > $RUNS/map_${name}_x4.txt
+  python3 $DIR/zen_ref.py $RUNS/map_${name}_x4.txt $pbpl
+  # memsim's own bank lookup (memsys_bank_of), as BARD will use it
+  if [ -x $OUT/memsim_ram2 ]; then
+    echo "== memsim -checkmap ($name, x4)"
+    (cd $REPO && $OUT/memsim_ram2 -checkmap $N -ramulatorconfig $DIR/${name}_x4.yaml > $RUNS/checkmap_${name}_x4.txt)
+    python3 $DIR/zen_ref.py $RUNS/checkmap_${name}_x4.txt $pbpl
+    grep "^# channel" $RUNS/checkmap_${name}_x4.txt
+  fi
 done

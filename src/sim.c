@@ -102,6 +102,10 @@ int main(int argc, char** argv)
   uns l3sets = (L3_SIZE_KB*1024)/(L3_ASSOC*LINESIZE);
 
   memsys = memsys_new();
+  if(CHECKMAP_LINES){
+    memsys_check_map(memsys, CHECKMAP_LINES);
+    exit(0);
+  }
   LLC = mcache_new(l3sets, L3_ASSOC, L3_REPL);
 
   for(ii=0; ii<num_threads; ii++){

@@ -22,6 +22,8 @@ extern uns64       LLC_MSHRS;
 extern uns64       MEM_WBBUF_SIZE;
 
 extern uns64       MEM_SIZE_MB;
+extern uns64       RAND_SEED;
+extern uns64       CHECKMAP_LINES;
 extern uns64       MEM_CHANNELS;
 extern uns64       MEM_BANKS;   
 extern uns64       MEM_PAGESIZE;

@@ -14,6 +14,10 @@ void    memsys_writeback(MemSys *m, Addr lineaddr, uns coreid);
 void    memsys_cycle(MemSys *m);
 void    memsys_print_stats(MemSys *m);
 void    memsys_print_dram_timings(MemSys *m);
+uns     memsys_bank_of(MemSys *m, Addr lineaddr);   // DRAM bank of a line, 0..memsys_num_banks()-1
+uns     memsys_num_banks(MemSys *m);
+uns     memsys_banks_per_channel(MemSys *m);
+void    memsys_check_map(MemSys *m, uns64 num_lines);
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////

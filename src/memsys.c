@@ -6,6 +6,7 @@
 #include <cmath>
 #include <deque>
 #include <iostream>
+#include <random>
 
 #include "externs.h"
 #include "memsys.h"
@@ -16,11 +17,22 @@
 #include "ramulator/base/request.h"
 #include "ramulator/controller/controller_base.h"
 #include "ramulator/frontend/i_frontend.h"
+#include "ramulator/memory_system/channel_mapper/i_channel_mapper.h"
 #include "ramulator/memory_system/i_memory_system.h"
 
 extern MCore *mcore[MAX_THREADS];
 extern uns64  LINESIZE;
 extern char   RAMULATOR_CONFIG_PATH[1024];
+
+// Ramulator2 keeps an Implementation's children protected and has no public
+// accessor for its controllers or channel mapper. A pointer-to-member taken
+// inside a derived class is the standard way to read a protected member
+// without changing Ramulator2 itself.
+struct ImplChildren : Ramulator::Implementation {
+  static std::vector<std::unique_ptr<Ramulator::Implementation>>& of(Ramulator::Implementation *impl){
+    return impl->*(&ImplChildren::m_children);
+  }
+};
 
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -30,6 +42,12 @@ extern char   RAMULATOR_CONFIG_PATH[1024];
 struct MemSys {
   Ramulator::IFrontEnd     *frontend;
   Ramulator::IMemorySystem *memory_system;
+
+  // Ramulator2's own mapping components, so memsim can ask which bank a
+  // line goes to exactly as the DRAM will map it (memsys_bank_of)
+  Ramulator::IChannelMapper                *chmap;
+  std::vector<Ramulator::ControllerBase*>  ctrls;  // one per channel, in channel order
+  uns    banks_per_channel;
 
   // Clock domains, as in Ramulator2's own driver: per memsim cycle the DRAM
   // ticks mem_ratio/fe_ratio times (DDR5-4800: 3 ticks per 5 memsim cycles).
@@ -79,6 +97,14 @@ MemSys *memsys_new(void){
   m->frontend->connect_memory_system(m->memory_system);
   m->memory_system->connect_frontend(m->frontend);
 
+  m->chmap = nullptr;
+  for(auto &child : ImplChildren::of(dynamic_cast<Ramulator::Implementation*>(m->memory_system))){
+    if(auto *cm = dynamic_cast<Ramulator::IChannelMapper*>(child.get())) m->chmap = cm;
+    if(auto *ct = dynamic_cast<Ramulator::ControllerBase*>(child.get())) m->ctrls.push_back(ct);
+  }
+  assert(m->chmap != nullptr && !m->ctrls.empty());
+  m->banks_per_channel = m->ctrls[0]->m_device.m_bank_nodes.size();
+
   m->fe_ratio  = m->frontend->get_clock_ratio();
   m->mem_ratio = m->memory_system->get_clock_ratio();
   m->clk_acc   = 0;
@@ -97,28 +123,8 @@ MemSys *memsys_new(void){
 // paper's Table I (DDR5-4800B x4), so the configuration can be checked.
 //////////////////////////////////////////////////////////////////////////
 
-// Ramulator2 keeps an Implementation's children protected and has no public
-// accessor for the DRAM spec. A pointer-to-member taken inside a derived
-// class is the standard way to read a protected member without changing
-// Ramulator2 itself.
-struct ImplChildren : Ramulator::Implementation {
-  static std::vector<std::unique_ptr<Ramulator::Implementation>>& of(Ramulator::Implementation *impl){
-    return impl->*(&ImplChildren::m_children);
-  }
-};
-
 static Ramulator::DRAMSpec* memsys_dram_spec(MemSys *m){
-  auto *impl = dynamic_cast<Ramulator::Implementation*>(m->memory_system);
-  if(impl == nullptr){
-    return nullptr;
-  }
-  for(auto &child : ImplChildren::of(impl)){
-    auto *ctrl = dynamic_cast<Ramulator::ControllerBase*>(child.get());
-    if(ctrl != nullptr){
-      return ctrl->m_device.m_spec; // all channels share one spec
-    }
-  }
-  return nullptr;
+  return m->ctrls[0]->m_device.m_spec; // all channels share one spec
 }
 
 void  memsys_print_dram_timings(MemSys *m){
@@ -166,7 +172,86 @@ void  memsys_print_dram_timings(MemSys *m){
   printf("  Clock: %d DRAM cycle(s) per %d memsim cycle(s) = %.3f ns per DRAM cycle (memsim cycle %.2f ns)%s\n",
 	 m->mem_ratio, m->fe_ratio, dram_cycle_ns, MEMSIM_CYCLE_NS,
 	 (fabs(dram_cycle_ns - tck) <= 0.01 * tck) ? "" : "   WARNING: does not match tCK");
+
+  // Geometry: channels = controllers; per-channel levels from the spec
+  const auto &sizes = spec->organization.level_sizes;
+  auto level = [&](const char *name){ return spec->has_level(name) ? sizes[spec->get_level_id(name)] : 1; };
+  int ranks = level("Rank"), bgs = level("BankGroup"), banks = level("Bank");
+  int nrows = level("Row"), ncols = level("Column");
+  double gb = (double)m->ctrls.size() * ranks * bgs * banks * nrows * ncols * (spec->channel_width / 8) / (1 << 30);
+  printf("  Geometry: %d channel(s) x %d rank(s) x %d bank groups x %d banks = %u banks/channel, %u total;"
+	 " %d rows x %d columns, x%d chips; %.0f GB\n",
+	 (int)m->ctrls.size(), ranks, bgs, banks, m->banks_per_channel, memsys_num_banks(m),
+	 nrows, ncols, spec->organization.dq, gb);
+  printf("  Address mapping: %s\n",
+	 dynamic_cast<Ramulator::Implementation*>(m->ctrls[0]->m_addr_mapper)->get_name().c_str());
   printf("\n");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Which DRAM bank a line maps to, using Ramulator2's own channel mapper and
+// address mapper. Banks are numbered 0..memsys_num_banks()-1, channel by
+// channel: channel * banks_per_channel + bank-in-channel.
+//////////////////////////////////////////////////////////////////////////
+
+static void memsys_map_line(MemSys *m, Addr lineaddr, Ramulator::Request &req){
+  m->chmap->apply(req);
+  m->ctrls[req.addr_vec[0]]->m_addr_mapper->apply(req);
+}
+
+uns   memsys_bank_of(MemSys *m, Addr lineaddr){
+  Ramulator::Request req((Ramulator::Addr_t)(lineaddr * LINESIZE), Ramulator::Request::Type::Read);
+  memsys_map_line(m, lineaddr, req);
+  int ch = req.addr_vec[0];
+  return ch * m->banks_per_channel + m->ctrls[ch]->m_device.get_flat_bank_id(req.addr_vec);
+}
+
+uns   memsys_num_banks(MemSys *m){
+  return m->ctrls.size() * m->banks_per_channel;
+}
+
+uns   memsys_banks_per_channel(MemSys *m){
+  return m->banks_per_channel;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// -checkmap N: map N line addresses (the first 4096 consecutive lines, then
+// random lines over all of memory) and print each one's address vector and
+// bank number, then a per-bank summary. Output can be checked with
+// SCRIPTS/check_mapping/zen_ref.py.
+//////////////////////////////////////////////////////////////////////////
+
+void  memsys_check_map(MemSys *m, uns64 num_lines){
+  Ramulator::DRAMSpec *spec = memsys_dram_spec(m);
+  uns64 lines_in_mem = (MEM_SIZE_MB << 20) / LINESIZE;
+  std::mt19937_64 rng(RAND_SEED);
+  std::vector<uns64> per_bank(memsys_num_banks(m), 0);
+
+  printf("# levels:");
+  for(auto &name : spec->level_names) printf(" %s", name.c_str());
+  printf(" FlatBank\n");
+  for(uns64 i = 0; i < num_lines; i++){
+    Addr line = (i < 4096) ? i : rng() % lines_in_mem;
+    Ramulator::Request req((Ramulator::Addr_t)(line * LINESIZE), Ramulator::Request::Type::Read);
+    memsys_map_line(m, line, req);
+    uns bank = memsys_bank_of(m, line);
+    per_bank[bank]++;
+    printf("%llu", (uns64)(line * LINESIZE));
+    for(auto v : req.addr_vec) printf(" %d", v);
+    printf(" %u\n", bank);
+  }
+
+  for(uns ch = 0; ch < m->ctrls.size(); ch++){
+    uns used = 0;
+    uns64 lo = ~0ULL, hi = 0;
+    for(uns b = ch * m->banks_per_channel; b < (ch + 1) * m->banks_per_channel; b++){
+      used += (per_bank[b] > 0);
+      lo = std::min(lo, per_bank[b]);
+      hi = std::max(hi, per_bank[b]);
+    }
+    printf("# channel %u: %u of %u banks used, lines per bank min %llu max %llu\n",
+	   ch, used, m->banks_per_channel, lo, hi);
+  }
 }
 
 
