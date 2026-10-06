@@ -355,6 +355,41 @@ void  memsys_cycle(MemSys *m){
 ////////////////////////////////////////////////////////////////////
 
 void  memsys_print_stats(MemSys *m){
+  // Same order as Ramulator2's own driver: finalize computes the averaged
+  // stats (read latency, queue lengths, throughput) and closes plugin files.
+  m->frontend->finalize();
+  m->memory_system->finalize();
+  memsys_print_counters(m);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Mid-run report (end of warmup): compute Ramulator2's averages without
+// finalize(), which would close its log files.
+//////////////////////////////////////////////////////////////////////////
+
+void  memsys_print_snapshot(MemSys *m){
+  m->memory_system->update_stats_recursive();
+  memsys_print_counters(m);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// End of warmup: zero memsim's and Ramulator2's counters. Queues, open
+// rows, waiting writebacks and in-flight reads are untouched.
+//////////////////////////////////////////////////////////////////////////
+
+void  memsys_reset_stats(MemSys *m){
+  m->s_wb_sent = m->s_wb_delayed = m->s_wb_stalls = 0;
+  m->s_wbbuf_max = m->wbbuf.size();
+  m->s_mshr_full = 0;
+  m->s_mshr_max = m->outstanding_reads;
+  m->s_wait_turn = 0;
+  m->memory_system->reset_stats_recursive();
+}
+
+//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+void  memsys_print_counters(MemSys *m){
   printf("\nMEM_WB_SENT        \t : %llu", m->s_wb_sent);
   printf("\nMEM_WB_DELAYED     \t : %llu", m->s_wb_delayed);
   printf("\nMEM_WB_STALLS      \t : %llu", m->s_wb_stalls);
@@ -364,10 +399,5 @@ void  memsys_print_stats(MemSys *m){
   printf("\nMEM_MSHR_MAX       \t : %llu", m->s_mshr_max);
   printf("\nMEM_WAIT_TURN      \t : %llu", m->s_wait_turn);
   printf("\n");
-
-  // Same order as Ramulator2's own driver: finalize computes the averaged
-  // stats (read latency, queue lengths, throughput) and closes plugin files.
-  m->frontend->finalize();
-  m->memory_system->finalize();
   m->memory_system->print_stats(std::cout);
 }

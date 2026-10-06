@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <iostream>
+#include <string>
 
 #include "global_types.h"
 #include "mcore.h"
@@ -80,6 +84,106 @@ void print_dots()
 
 
 /***************************************************************************************
+ * Statistics report: the main output at the end, and the warmup file
+ ***************************************************************************************/
+
+static void print_report(Flag end_of_run, uns64 sys_cycles)
+{
+  int ii;
+
+  printf("\n\n");
+   
+  printf("------------------------------------\n");
+  printf("------  MEMSIM.V1.1  ----------\n");
+  printf("------------------------------------\n");
+
+  for(ii=0; ii<num_threads; ii++){
+    if(end_of_run) mcore_print_stats(mcore[ii]);   // also closes the trace
+    else           mcore_print_counters(mcore[ii]);
+  }
+
+  mcache_print_stats(LLC, (char*) "L3CACHE");
+  if(end_of_run) memsys_print_stats(memsys);
+  else           memsys_print_snapshot(memsys);
+
+  os_print_stats(os);
+
+  if(WARMUP_INST && end_of_run){
+    printf("\nWARMUP_INST     \t : %llu", WARMUP_INST);
+    printf("\nWARMUP_CYCLES   \t : %llu", warmup_end_cycle);
+    printf("\nWARMUP_FILE     \t : %s", WARMUP_FILE);
+    printf("\n(stats above cover only the measured instructions after warmup; OS_PAGE_MISS covers the whole run)\n");
+  }
+  
+  uns64 sum_done_cycles=0;
+  for(ii=0; ii<num_threads; ii++){
+    sum_done_cycles+=(uns64)(mcore[ii]->done_cycle_count);
+  }
+  uns64 avg_done_cycles=(uns64)(sum_done_cycles)/(uns64)(num_threads);
+
+  printf("\nSYS_CYCLES      \t : %llu", sys_cycles);
+  printf("\nAVG_CORE_CYCLES \t : %llu", avg_done_cycles);
+
+  printf("\n\n\n");
+}
+
+/***************************************************************************************
+ * End of warmup (all cores executed WARMUP_INST instructions): write the stats so
+ * far to WARMUP_FILE, then reset every counter so the main output covers only the
+ * measured instructions. Machine state (cache contents, DRAM rows and queues,
+ * page mappings) is kept: that is what the warmup is for.
+ ***************************************************************************************/
+
+static void end_warmup(void)
+{
+  int ii;
+  warmup_end_cycle = cycle + 1;  // called at the end of this cycle
+
+  if(WARMUP_FILE[0] == '\0'){
+    std::string name = addr_trace_filename[0];
+    name = name.substr(name.find_last_of('/') + 1);
+    for(const char *ext : {".gz", ".mtf"}){
+      size_t len = strlen(ext);
+      if(name.size() > len && name.compare(name.size() - len, len, ext) == 0) name.resize(name.size() - len);
+    }
+    snprintf(WARMUP_FILE, sizeof(WARMUP_FILE), "output/%s_warmup.txt", name.c_str());
+  }
+
+  for(ii=0; ii<num_threads; ii++){
+    mcore_snapshot_stats(mcore[ii]);
+  }
+
+  fflush(stdout);
+  std::cout.flush();
+  int fd = open(WARMUP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  if(fd < 0){
+    fprintf(stderr, "\nWARNING: cannot write the warmup stats to %s\n", WARMUP_FILE);
+  }else{
+    int saved_stdout = dup(1);
+    dup2(fd, 1);
+    close(fd);
+    printf("MEMSIM WARMUP STATS: the first %llu instructions per core (%llu cycles),\n", WARMUP_INST, warmup_end_cycle);
+    printf("excluded from the main results.\n");
+    print_report(FALSE, warmup_end_cycle);
+    fflush(stdout);
+    std::cout.flush();
+    dup2(saved_stdout, 1);
+    close(saved_stdout);
+  }
+
+  for(ii=0; ii<num_threads; ii++){
+    mcore_reset_stats(mcore[ii]);
+  }
+  mcache_reset_stats(LLC);
+  memsys_reset_stats(memsys);
+  warmup_done = 1;
+
+  printf("\nWarmup done at cycle %llu: stats reset (warmup stats in %s)\n", warmup_end_cycle, WARMUP_FILE);
+  fflush(stdout);
+}
+
+
+/***************************************************************************************
  * Main
  ***************************************************************************************/
 int main(int argc, char** argv)
@@ -128,6 +232,16 @@ int main(int argc, char** argv)
     }
 
     memsys_cycle(memsys); // every cycle, cycle through DRAM
+
+    if(WARMUP_INST && !warmup_done){
+      Flag all_warm = TRUE;
+      for(ii=0; ii<num_threads; ii++){
+	all_warm &= (mcore_lifetime_inst(mcore[ii]) >= WARMUP_INST);
+      }
+      if(all_warm){
+	end_warmup();
+      }
+    }
     if (cycle - last_printdot_cycle >= DOT_INTERVAL){
       print_dots();
     }
@@ -138,33 +252,8 @@ int main(int argc, char** argv)
   //--------------------------------------------------------------------
   // -- Print statistics
   //--------------------------------------------------------------------
-  
-  printf("\n\n");
-   
-  printf("------------------------------------\n");
-  printf("------  MEMSIM.V1.1  ----------\n");
-  printf("------------------------------------\n");
 
-  for(ii=0; ii<num_threads; ii++){
-    mcore_print_stats(mcore[ii]);
-  }
-
-  mcache_print_stats(LLC, (char*) "L3CACHE");
-  memsys_print_stats(memsys);
-
-  os_print_stats(os);
-
-  
-  uns64 sum_done_cycles=0;
-  for(ii=0; ii<num_threads; ii++){
-    sum_done_cycles+=(uns64)(mcore[ii]->done_cycle_count);
-  }
-  uns64 avg_done_cycles=(uns64)(sum_done_cycles)/(uns64)(num_threads);
-
-  printf("\nSYS_CYCLES      \t : %llu", cycle);
-  printf("\nAVG_CORE_CYCLES \t : %llu", avg_done_cycles);
-
-  printf("\n\n\n");
+  print_report(TRUE, WARMUP_INST ? cycle - warmup_end_cycle : cycle);
 
   return 0;
 }

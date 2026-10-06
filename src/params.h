@@ -12,7 +12,9 @@ uns64  ROB_SIZE     =    256;
 
 
 uns64       TRACE_LIMIT     = (2*1000*1000*1000); // Max 2B memory access
-uns64       INST_LIMIT      = 100*1000*1000; // set default 
+uns64       INST_LIMIT      = 100*1000*1000; // set default
+uns64       WARMUP_INST     = 0; // -warmup N: N instructions per core before stats are reset (0 = no warmup)
+char        WARMUP_FILE[1024] = ""; // where the warmup stats go (default output/<trace>_warmup.txt)
 uns64       NUM_THREADS     = 0;
 uns64       RATE_MODE_THREADS  = 0;
 uns64       LINESIZE        = 64; 
@@ -71,6 +73,8 @@ uns64       cycle;
 uns64       last_printdot_cycle;
 char        addr_trace_filename[256][1024];
 int         num_threads = 0;
+int         warmup_done = 0;      // set once every core finished warmup and stats were reset
+uns64       warmup_end_cycle = 0; // system cycles spent in warmup
 
 
 /***************************************************************************************
@@ -84,6 +88,9 @@ void die_usage() {
 
     printf("   Option (examples)\n");
     printf("               -inst_limit  <num>    Set instruction limit (Default: 0)\n");
+    printf("               -warmup      <num>    Warm up <num> instructions per core, then reset stats and\n");
+    printf("                                     measure -inst_limit more (Default: 0 = no warmup)\n");
+    printf("               -warmupfile  <path>   Write the warmup stats here (Default: output/<trace>_warmup.txt)\n");
     printf("               -ratemode    <num>    Number of threads in rate mode (Default: 1)\n");
     printf("               -l3sizemb    <num>    Set L3  Cache size to <num> MB (Default: 1MB)\n");
     printf("               -l3assoc     <num>    Set L3  Cache assoc <num> (Default: 16)\n");
@@ -384,6 +391,20 @@ void read_params(int argc, char **argv){
 	    else if (!strcmp(argv[ii], "-rfmraammt")) {
 		if (ii < argc - 1) {
 		    RFM_RAAMMT = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-warmup")) {
+		if (ii < argc - 1) {
+		    WARMUP_INST = atoll(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-warmupfile")) {
+		if (ii < argc - 1) {
+		    strncpy(WARMUP_FILE, argv[ii+1], sizeof(WARMUP_FILE) - 1);
 		    ii += 1;
 		}
 	    }

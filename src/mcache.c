@@ -310,10 +310,21 @@ uns mcache_get_index(MCache *c, Addr addr){
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
+void  mcache_reset_stats(MCache *c){
+  c->s_count_base = c->s_count; // s_count is the LRU clock, so keep it running
+  c->s_miss = 0;
+  c->s_evict = 0;
+  c->s_writeback = 0;
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
 void  mcache_print_stats(MCache *c, char *header){
-  double missrate = 100.0 * (double)c->s_miss/(double)c->s_count;
-  
-  printf("\n%s_ACCESS       \t : %llu",  header,  c->s_count);
+  uns64 accesses = c->s_count - c->s_count_base;
+  double missrate = 100.0 * (double)c->s_miss/(double)accesses;
+
+  printf("\n%s_ACCESS       \t : %llu",  header,  accesses);
   printf("\n%s_MISS         \t : %llu",  header,  c->s_miss);
   printf("\n%s_MISSRATE     \t : %6.3f", header,  missrate);
   printf("\n%s_WRITEBACKS   \t : %llu",  header,  c->s_writeback);

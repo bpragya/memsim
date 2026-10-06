@@ -54,7 +54,17 @@ for ch, logpath in enumerate(sorted(glob.glob(log + '.ch*'))):
     drains = mismatched = 0
     tot = dict(drain_writes=0, drain_banks_total=0, drain_wr2wr_gaps=0, drain_wr2wr_total=0)
     max_blp = 0
-    for d in csv.DictReader(open(logpath)):
+    # A "# stats reset" line (end of warmup) restarts the totals that are
+    # compared with the printed stats; every drain is still checked.
+    log_lines = open(logpath).read().splitlines()
+    header = log_lines[0]
+    for line in log_lines[1:]:
+        if line.startswith('#'):
+            drains = 0
+            tot = dict.fromkeys(tot, 0)
+            max_blp = 0
+            continue
+        d = dict(zip(header.split(','), line.split(',')))
         start, mode_end, close = int(d['start']), int(d['mode_end']), int(d['close'])
         lo, hi = bisect.bisect_left(clocks, start), bisect.bisect_right(clocks, close)
         window = [wr[i] for i in range(lo, hi) if start <= picked[i] <= mode_end]

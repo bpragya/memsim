@@ -43,7 +43,8 @@ struct MCache{
   Flag evicted_dirty_line;
   Addr evicted_line_addr;
 
-  uns64 s_count; // number of accesses
+  uns64 s_count; // number of accesses (also the LRU clock: never reset)
+  uns64 s_count_base; // s_count at the last stats reset
   uns64 s_miss; // number of misses
   uns64 s_evict; // number of evictions
   uns64 s_writeback; // evictions of dirty lines (writebacks to memory)
@@ -67,6 +68,7 @@ uns     mcache_find_victim_rnd   (MCache *c, uns set);
 uns     mcache_find_victim_srrip   (MCache *c, uns set);
 
 void    mcache_print_stats(MCache *c, char *header);
+void    mcache_reset_stats(MCache *c); // end of warmup: zero the counters, keep the contents
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 

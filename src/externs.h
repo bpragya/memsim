@@ -7,6 +7,8 @@ extern void die_message(const char *msg);
 
 extern uns64       USE_IMAT_TRACES;
 extern uns64       INST_LIMIT;
+extern uns64       WARMUP_INST;
+extern char        WARMUP_FILE[1024];
 extern uns64       LINESIZE;     
 extern uns64       OS_PAGESIZE; 
 extern uns64       OS_NUM_RND_TRIES;
@@ -62,6 +64,8 @@ extern char        RAMULATOR_CONFIG_PATH[1024];
 
 // these are non-param global variables
 extern int         num_threads;
+extern int         warmup_done;
+extern uns64       warmup_end_cycle;
 
 #endif
 

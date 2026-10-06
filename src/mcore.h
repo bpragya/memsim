@@ -75,6 +75,8 @@ struct MCore {
     uns64 sleep_cycle_count; // queue full, core sleeps
 
     uns64  lifetime_inst_count;
+    uns64  warm_inst_base;   // lifetime instructions when warmup ended (measuring starts)
+    uns64  warm_cycle_base;  // core cycle when warmup ended
 
     uns64 done_inst_count;
     uns64 done_cycle_count;
@@ -94,10 +96,14 @@ struct MCore {
 MCore *mcore_new(MemSys *memsys, OS *os, MCache *l3cache, char *addr_trace_fname, uns tid);
 void   mcore_cycle(MCore *core);
 void   mcore_print_stats(MCore *c);
+void   mcore_print_counters(MCore *c); // same report, trace left open
 void   mcore_print_state(MCore *c);
 void   mcore_read_trace(MCore *c);
 void   mcore_fread_trace(MCore *c);
 void   mcore_init_trace(MCore *c);
+uns64  mcore_lifetime_inst(MCore *c);  // instructions executed so far, across trace rewinds
+void   mcore_snapshot_stats(MCore *c); // copy live counters into done_* (for the warmup report)
+void   mcore_reset_stats(MCore *c);    // end of warmup: zero counters, measure from here
 
 Flag   mcore_retry_sleeping_request(MCore *c);
 

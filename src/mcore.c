@@ -88,9 +88,13 @@ void mcore_cycle (MCore *c){
     }
     
     c->inst_num++;
-  
-    if( (!c->done) && c->inst_num > INST_LIMIT){
-      mcore_read_trace(c); // break loop
+
+    if(WARMUP_INST == 0){
+      if( (!c->done) && c->inst_num > INST_LIMIT){
+	mcore_read_trace(c); // break loop
+      }
+    }else if( (!c->done) && warmup_done && (mcore_lifetime_inst(c) - c->warm_inst_base > INST_LIMIT) ){
+      mcore_read_trace(c); // break loop: measured instructions reached the limit
     }
 
     Addr orig_lineaddr = os_v2p_lineaddr(c->os, c->trace_va, c->id);
@@ -168,6 +172,26 @@ void mcore_read_trace (MCore *c){
 
     mcore_fread_trace(c);
 
+    if(WARMUP_INST){
+      // With warmup, a core is done after INST_LIMIT instructions measured
+      // from the end of warmup; reaching the end of the trace only rewinds it.
+      Flag eof   = gzeof(c->addr_trace);
+      Flag limit = (!c->done) && warmup_done &&
+	           (mcore_lifetime_inst(c) - c->warm_inst_base >= INST_LIMIT);
+      if(limit){
+	mcore_snapshot_stats(c);
+	c->done = 1;
+      }
+      if((eof || limit) && !MCORE_STOP_ON_EOF){
+	gzclose(c->addr_trace);
+	mcore_init_trace(c);
+	mcore_fread_trace(c);
+	c->lifetime_inst_count += c->inst_num;
+	c->inst_num = 0;
+      }
+      return;
+    }
+
     if(gzeof(c->addr_trace) || ((!c->done) && (c->inst_num >= INST_LIMIT)) ){
 
 
@@ -198,8 +222,58 @@ void mcore_read_trace (MCore *c){
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
+uns64 mcore_lifetime_inst(MCore *c){
+  return c->lifetime_inst_count + c->inst_num;
+}
+
+////////////////////////////////////////////////////////////
+// Copy the live counters into the done_* fields that mcore_print_stats
+// reports. With warmup, instructions and cycles count from the end of
+// warmup (warm_*_base); during warmup those bases are 0.
+////////////////////////////////////////////////////////////
+
+void mcore_snapshot_stats(MCore *c){
+  c->done_inst_count        = mcore_lifetime_inst(c) - c->warm_inst_base;
+  c->done_cycle_count       = c->cycle - c->warm_cycle_base;
+  c->done_access_count      = c->access_count;
+  c->done_miss_count        = c->miss_count;
+  c->done_num_delay_count   = c->num_delay_count;
+  c->done_sum_delay_count   = c->sum_delay_count;
+  c->done_queue_full_count  = c->queue_full_count;
+  c->done_sleep_cycle_count = c->sleep_cycle_count;
+}
+
+////////////////////////////////////////////////////////////
+// End of warmup: measurement starts here. Only statistics are cleared;
+// the core's state (ROB, trace position, cycle) is untouched.
+////////////////////////////////////////////////////////////
+
+void mcore_reset_stats(MCore *c){
+  c->warm_inst_base    = mcore_lifetime_inst(c);
+  c->warm_cycle_base   = c->cycle;
+  c->access_count      = 0;
+  c->miss_count        = 0;
+  c->num_delay_count   = 0;
+  c->sum_delay_count   = 0;
+  c->queue_full_count  = 0;
+  c->sleep_cycle_count = 0;
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
 void mcore_print_stats(MCore *c){
-  
+  mcore_print_counters(c);
+  gzclose(c->addr_trace);
+}
+
+////////////////////////////////////////////////////////////
+// Print the done_* counters; leaves the trace open (used mid-run for the
+// warmup report as well as at the end).
+////////////////////////////////////////////////////////////
+
+void mcore_print_counters(MCore *c){
+
   double ipc = (double)(c->done_inst_count)/(double)(c->done_cycle_count);
   double apki = 1000 * (double)c->done_access_count/(double)c->done_inst_count;
   double mpki = 1000 * (double)c->done_miss_count/(double)c->done_inst_count;
@@ -223,10 +297,8 @@ void mcore_print_stats(MCore *c){
   printf("\n%s_AVGDELAY     \t : %4.2f", header,  avgdelay);
   printf("\n%s_SLEEP_CYCLES \t : %llu",  header,  c->done_sleep_cycle_count);
   printf("\n%s_IPC          \t : %4.3f", header,  ipc);
-  
-  printf("\n");
 
-  gzclose(c->addr_trace);
+  printf("\n");
 }
 
 
