@@ -61,19 +61,25 @@ DRAM*   dram_new(void){
 Flag   dram_insert(DRAM *d, Addr lineaddr,Flag wb){
   uns64 mybankid, myrowbufid, mychannelid;
   Flag retval = TRUE;
-  DRAM_ReqType reqtype = DRAM_REQ_RD;
 
-  if(wb){
-    reqtype = DRAM_REQ_WB;
-  }
-  
   assert(lineaddr < d->lines_in_mem); //we get physical DRAM lineid
 
   // parse address bits and get my bank
   dram_parseaddr(d,lineaddr,&myrowbufid,&mybankid,&mychannelid);
-  
-  retval = dram_channel_insert(d->channel[mychannelid], mybankid, reqtype, myrowbufid, lineaddr);
-  return retval; 
+  DRAM_Channel *ch = d->channel[mychannelid];
+
+  // writebacks go to the channel write queue (may coalesce, or be refused if full)
+  if(wb){
+    return dram_channel_insert_wr(ch, mybankid, myrowbufid, lineaddr);
+  }
+
+  // a read to a line with a queued write is served from the write queue
+  if(dram_channel_forward_rd(ch, lineaddr)){
+    return TRUE;
+  }
+
+  retval = dram_channel_insert(ch, mybankid, DRAM_REQ_RD, myrowbufid, lineaddr);
+  return retval;
 }
 
 
@@ -254,8 +260,8 @@ void dram_cycle(DRAM *d){
 	uns start = d->refsb_ptr * d->banks_in_bankgroup;
 	uns end   = start + d->banks_in_bankgroup;
 	for(jj=start; jj < end; jj++){
-	  if(d->channel[ii]->bank[jj]->sleep_cycle > max_bank_ready_cycle){
-	    max_bank_ready_cycle = d->channel[ii]->bank[jj]->sleep_cycle;
+	  if(dram_bank_ready_cycle(d->channel[ii]->bank[jj]) > max_bank_ready_cycle){
+	    max_bank_ready_cycle = dram_bank_ready_cycle(d->channel[ii]->bank[jj]);
 	  }
 	}
 	for(jj=start; jj < end; jj++){
@@ -269,8 +275,8 @@ void dram_cycle(DRAM *d){
       for(ii=0; ii< d->num_channels; ii++){
 	uns64 max_bank_ready_cycle = cycle;
 	for(jj=0; jj < d->num_banks/d->num_channels; jj++){
-	  if(d->channel[ii]->bank[jj]->sleep_cycle > max_bank_ready_cycle){
-	    max_bank_ready_cycle = d->channel[ii]->bank[jj]->sleep_cycle;
+	  if(dram_bank_ready_cycle(d->channel[ii]->bank[jj]) > max_bank_ready_cycle){
+	    max_bank_ready_cycle = dram_bank_ready_cycle(d->channel[ii]->bank[jj]);
 	  }
 	}
 	for(jj=0; jj < d->num_banks/d->num_channels; jj++){
@@ -302,10 +308,19 @@ void dram_print_state(DRAM *d){
 void dram_print_stats(DRAM *d){
  uns ii,jj;
   
+  uns64 tot_wr=0, tot_wr_coalesced=0, tot_rd_forwarded=0, tot_wrq_full=0;
+  uns64 tot_wr_drains=0, tot_wr_mode_cycles=0;
+
   for(ii=0; ii< d->num_channels; ii++){
     d->s_tot_RFM  +=  d->channel[ii]->s_RFM;
     d->s_tot_bus_delay += d->channel[ii]->s_bus_time;
-    
+    tot_wr             += d->channel[ii]->s_wr_issued;
+    tot_wr_coalesced   += d->channel[ii]->s_wr_coalesced;
+    tot_rd_forwarded   += d->channel[ii]->s_rd_forwarded;
+    tot_wrq_full       += d->channel[ii]->s_wrq_full;
+    tot_wr_drains      += d->channel[ii]->s_wr_drains;
+    tot_wr_mode_cycles += d->channel[ii]->s_wr_mode_cycles;
+
     for(jj=0; jj < d->num_banks/d->num_channels; jj++){
       d->s_tot_ACT +=  d->channel[ii]->bank[jj]->s_ACT;
       d->s_tot_REQ +=  d->channel[ii]->bank[jj]->s_REQ;
@@ -333,6 +348,13 @@ void dram_print_stats(DRAM *d){
   printf("\n%s_NUM_TREFI   \t : %llu",  header,  d->num_trefi);
   printf("\n%s_NUM_TREFW   \t : %llu",  header,  d->num_trefw);
   printf("\n%s_RFM         \t : %llu",  header,  d->s_tot_RFM);
+  printf("\n%s_WR          \t : %llu",  header,  tot_wr);
+  printf("\n%s_WR_COALESCED\t : %llu",  header,  tot_wr_coalesced);
+  printf("\n%s_RD_FORWARDED\t : %llu",  header,  tot_rd_forwarded);
+  printf("\n%s_WRQ_FULL    \t : %llu",  header,  tot_wrq_full);
+  printf("\n%s_WR_DRAINS   \t : %llu",  header,  tot_wr_drains);
+  printf("\n%s_WR_MODE_PCT \t : %4.2f",  header,
+	 cycle ? 100.0*(double)tot_wr_mode_cycles/((double)cycle*d->num_channels) : 0.0);
 
   printf("\n");
   

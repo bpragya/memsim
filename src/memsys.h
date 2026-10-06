@@ -2,6 +2,7 @@
 #define MEMSYS_H
 
 #include <unordered_map>
+#include <deque>
 #include "global_types.h"
 #include "dram.h"
 
@@ -24,6 +25,11 @@ struct MemSys {
   DRAM     *mainmem;
   uns64     lines_in_mainmem_rbuf;
   std::unordered_map<uns64, MSHR_Entry> mshr;
+
+  std::deque<Addr> wbbuf;  // writebacks waiting for a write queue slot
+  uns64     s_wb_delayed;  // writebacks that had to wait in wbbuf
+  uns64     s_wb_stalls;   // reads refused because wbbuf was full
+  uns64     s_wbbuf_max;   // peak wbbuf occupancy
 };
 
 ////////////////////////////////////////////////////////////////////

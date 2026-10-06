@@ -41,7 +41,10 @@ DRAM_Bank*   dram_bank_new(uns bankid, uns channelid, uns num_rows){
   b->rowbufopen_cycle = 0; 
   b->rowbufclose_cycle = 0;; // for closed page policy and for Tonmax
   b->RAA=0; // RFM
-    
+  b->last_wr_cycle = 0;
+  b->has_wr = FALSE;
+  b->last_service_opened = FALSE;
+
   if(MEM_CLOSEPAGE){
     DRAM_MAX_TOPEN=tRAS; // closed page policy closes page after t_RAS
   }
@@ -69,13 +72,38 @@ void  dram_bank_cycle(DRAM_Bank *b){
     }
   }
 
+  DRAM_Channel *mychannel = memsys->mainmem->channel[b->channelid];
+
+  // write mode: serve only the channel write queue (Ramulator2 schedules
+  // from the write buffer only while in write mode)
+  if(mychannel->write_mode){
+    if(mychannel->dbusq.entries[b->id].valid){
+      return;
+    }
+    int wi = dram_channel_pick_wr(mychannel, b);
+    if(wi < 0){
+      return;
+    }
+    DRAM_WrQ_Entry *we = &mychannel->wrq.entries[wi];
+    uns64 wr_delay = dram_bank_service(b, DRAM_REQ_WB, we->rowid, we->arrive);
+    b->s_REQ++;
+    b->s_service_delay += wr_delay;
+    b->s_wait_delay += cycle - we->arrive;
+    dram_channel_insert_rdwrq(mychannel, b->id, DRAM_REQ_WB, we->lineaddr, cycle + wr_delay);
+    DRAM_BusQ_Entry *wq = &mychannel->dbusq.entries[b->id];
+    wq->leave_at_dispatch = !b->last_service_opened;
+    wq->leave_time = cycle + wr_delay - tACT; // ACT issues tACT before the WR can
+    wq->wrq_index = wi;
+    dram_channel_start_wr(mychannel, wi, b->last_service_opened, wq->leave_time);
+    return;
+  }
+
   // if queue is empty go away
   if(b->bankq.size() == 0){
     return;
   }
 
   // if the bank is waiting for RDWR token, go away
-  DRAM_Channel *mychannel = memsys->mainmem->channel[b->channelid];
   if(mychannel->dbusq.entries[b->id].valid){
     return;
   }
@@ -90,6 +118,9 @@ void  dram_bank_cycle(DRAM_Bank *b){
   uns64 bank_delay = dram_bank_service(b,  b->bankq[index].reqtype, b->bankq[index].rowid,  b->bankq[index].birth_time );
 
   b->bankq[index].status = DRAM_BANKQ_ENTRY_INSERVICE;
+  if(b->bankq[index].reqtype == DRAM_REQ_RD){
+    mychannel->reads_waiting--;
+  }
   uns64 tot_delay = bank_delay; 
   b->bankq[index].done_time = cycle + tot_delay;
   b->bankq[index].service_delay =  tot_delay;
@@ -105,6 +136,10 @@ void  dram_bank_cycle(DRAM_Bank *b){
     DRAM_ReqType myreqtype = b->bankq[index].reqtype;
     
     dram_channel_insert_rdwrq(mychannel, b->id,  myreqtype, mylineaddr, myreadytime); // RD-WR Q
+    DRAM_BusQ_Entry *rq = &mychannel->dbusq.entries[b->id];
+    rq->leave_at_dispatch = !b->last_service_opened;
+    rq->leave_time = cycle + bank_delay - tACT; // ACT issues tACT before the RD can
+    rq->wrq_index = -1;
     b->s_service_delay += bank_delay ;
     b->s_wait_delay += b->bankq[index].wait_delay ;
   }
@@ -169,9 +204,12 @@ uns64   dram_bank_service(DRAM_Bank *b,  DRAM_ReqType type, uns64 rowid, uns64 r
     if( b->row_valid){
       if(cycle  >= b->rowbufclose_cycle){
 	b->row_valid = FALSE;
-	uns64 delta = cycle - b->rowbufclose_cycle;
-	if(delta < tPRE){
-	  act_delay += (tPRE-delta);
+	uns64 pre_start = b->rowbufclose_cycle;
+	if(dram_bank_pre_ready(b) > pre_start){
+	  pre_start = dram_bank_pre_ready(b); // write recovery delays the precharge
+	}
+	if(pre_start + tPRE > cycle){
+	  act_delay += (pre_start + tPRE - cycle);
 	}
       }
     }
@@ -194,6 +232,9 @@ uns64   dram_bank_service(DRAM_Bank *b,  DRAM_ReqType type, uns64 rowid, uns64 r
 	if(delta < tRAS){
 	  ras_delay = tRAS-delta;
 	}
+	if(dram_bank_pre_ready(b) > cycle + ras_delay){
+	  ras_delay = dram_bank_pre_ready(b) - cycle; // write recovery before PRE
+	}
 	b->rowbufopen_cycle = cycle + ras_delay + tPRE ;
 	act_delay = (ras_delay + pre_delay +tACT);
 	b->rowbufclose_cycle = b->rowbufopen_cycle+DRAM_MAX_TOPEN; // page closure
@@ -204,7 +245,8 @@ uns64   dram_bank_service(DRAM_Bank *b,  DRAM_ReqType type, uns64 rowid, uns64 r
     }
 
     
-    retval = act_delay; 
+    retval = act_delay;
+    b->last_service_opened = new_act;
     b->status = DRAM_BANK_BUSY;
     b->sleep_cycle = cycle + act_delay + tCCDL; // same bank -> tCCDL
   }
@@ -264,6 +306,24 @@ uns         dram_bank_schedule(DRAM_Bank *b){
   }
 
   assert(0);
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+// earliest cycle a PRE may issue after this bank's last write
+// (Ramulator2 WR-to-PRE: nCWL + nBL + nWR)
+uns64  dram_bank_pre_ready(DRAM_Bank *b){
+  if(!b->has_wr){
+    return 0;
+  }
+  return b->last_wr_cycle + tCWL + tBUS + tWR;
+}
+
+// earliest cycle the bank can be refreshed / RFM'd (busy and write recovery)
+uns64  dram_bank_ready_cycle(DRAM_Bank *b){
+  uns64 ready = dram_bank_pre_ready(b);
+  return (b->sleep_cycle > ready) ? b->sleep_cycle : ready;
 }
 
 ////////////////////////////////////////////////////////////

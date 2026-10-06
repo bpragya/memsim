@@ -47,6 +47,22 @@ uns64       tCCDL=20; // RD-to-RD, same bank (Ramulator2 nCCDL, bank level)
 uns64       tCCDM=16; // RD-to-RD, other bank in same bank group (Ramulator2 nCCDM, bank sibling)
 uns64       tBUS=13;  // data burst on the bus; read data arrives tCAS+tBUS after RD issue (Ramulator2 nBL)
 
+// write path -- defaults are Ramulator2's DDR5_8000AN x8 values
+uns64       tCWL=54;     // WR command to write data on the bus (nCWL)
+uns64       tWR=120;     // write recovery: end of write data to PRE (nWR)
+uns64       tCCDS_WR=8;  // WR-to-WR, any bank (nCCDS_WR, rank level)
+uns64       tCCDL_WR=40; // WR-to-WR, same bank (nCCDL_WR, bank level)
+uns64       tCCDM_WR=64; // WR-to-WR, other bank in same bank group (nCCDM_WR, bank sibling)
+uns64       tRTW=17;     // RD-to-WR, any bank (nRTW)
+uns64       tWTRS=8;     // WR-to-RD adds tCWL+tBUS+tWTRS, any bank (nWTRS)
+uns64       tWTRL=40;    // WR-to-RD adds tCWL+tBUS+tWTRL, same bank (nWTRL)
+uns64       tWTRM=32;    // WR-to-RD adds tCWL+tBUS+tWTRM, other bank in same bank group (nWTRM)
+
+uns64       MEM_WRQ_SIZE   = 32;   // write queue entries per channel (Ramulator2 write_buffer_size)
+double      MEM_WRQ_LOW_WM  = 0.2; // leave write mode below this fraction (Ramulator2 wr_low_watermark)
+double      MEM_WRQ_HIGH_WM = 0.8; // enter write mode above this fraction (Ramulator2 wr_high_watermark)
+uns64       MEM_WBBUF_SIZE = 32;   // writebacks waiting for a WRQ slot before reads are refused
+
 uns64       tRFC=410*4;
 uns64       tREFI=3900*4;
 uns64       tREFW=32*1000*1000*4;
@@ -340,10 +356,50 @@ void read_params(int argc, char **argv){
 	    }
 
 	   else if (!strcmp(argv[ii], "-tRFM")) {
-	        if (ii < argc - 1) {		  
+	        if (ii < argc - 1) {
 		    tRFM = atoi(argv[ii+1]);
 		    ii += 1;
 		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-tCWL")) {
+	        if (ii < argc - 1) { tCWL = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tWR")) {
+	        if (ii < argc - 1) { tWR = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tCCDS_WR")) {
+	        if (ii < argc - 1) { tCCDS_WR = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tCCDL_WR")) {
+	        if (ii < argc - 1) { tCCDL_WR = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tCCDM_WR")) {
+	        if (ii < argc - 1) { tCCDM_WR = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tRTW")) {
+	        if (ii < argc - 1) { tRTW = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tWTRS")) {
+	        if (ii < argc - 1) { tWTRS = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tWTRL")) {
+	        if (ii < argc - 1) { tWTRL = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-tWTRM")) {
+	        if (ii < argc - 1) { tWTRM = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-wrqsize")) {
+	        if (ii < argc - 1) { MEM_WRQ_SIZE = atoi(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-wrqlow")) {
+	        if (ii < argc - 1) { MEM_WRQ_LOW_WM = atof(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-wrqhigh")) {
+	        if (ii < argc - 1) { MEM_WRQ_HIGH_WM = atof(argv[ii+1]); ii += 1; }
+	    }
+	    else if (!strcmp(argv[ii], "-wbbufsize")) {
+	        if (ii < argc - 1) { MEM_WBBUF_SIZE = atoi(argv[ii+1]); ii += 1; }
 	    }
 
 	    

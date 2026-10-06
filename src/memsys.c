@@ -21,7 +21,10 @@ MemSys *memsys_new(void){
   m->mainmem = dram_new(); 
   sprintf(m->mainmem->name, "MEM");
   m->lines_in_mainmem_rbuf = MEM_PAGESIZE/LINESIZE; // static
-   
+  m->s_wb_delayed = 0;
+  m->s_wb_stalls  = 0;
+  m->s_wbbuf_max  = 0;
+
   return m;
 }
 
@@ -32,14 +35,28 @@ MemSys *memsys_new(void){
 
 Flag memsys_access(MemSys *m, Addr lineaddr,  uns coreid, uns robid, uns64 inst_num, Addr wb_lineaddr){
   Flag retval=FALSE;
-  retval = dram_insert(m->mainmem, lineaddr, FALSE);
 
-  if(retval==TRUE){
-    memsys_mshr_insert(m, lineaddr, coreid, robid, inst_num);
+  // back-pressure: too many writebacks waiting for the write queue, so
+  // refuse the read (the core sleeps and retries it, with no writeback)
+  if(m->wbbuf.size() >= MEM_WBBUF_SIZE){
+    m->s_wb_stalls++;
+  }else{
+    retval = dram_insert(m->mainmem, lineaddr, FALSE);
+    if(retval==TRUE){
+      memsys_mshr_insert(m, lineaddr, coreid, robid, inst_num);
+    }
   }
-  
+
+  // a writeback is never dropped: if the write queue refuses it, it waits
+  // in wbbuf and is retried every cycle in memsys_cycle()
   if(wb_lineaddr){
-    dram_insert(m->mainmem, wb_lineaddr, TRUE);
+    if(!dram_insert(m->mainmem, wb_lineaddr, TRUE)){
+      m->wbbuf.push_back(wb_lineaddr);
+      m->s_wb_delayed++;
+      if(m->wbbuf.size() > m->s_wbbuf_max){
+	m->s_wbbuf_max = m->wbbuf.size();
+      }
+    }
   }
   return retval;
 }
@@ -49,7 +66,17 @@ Flag memsys_access(MemSys *m, Addr lineaddr,  uns coreid, uns robid, uns64 inst_
 ////////////////////////////////////////////////////////////////////
 
 void  memsys_cycle(MemSys *m){
-  dram_cycle(m->mainmem); 
+  dram_cycle(m->mainmem);
+
+  // retry waiting writebacks, oldest first; one blocked channel does not
+  // hold back writebacks to other channels
+  for(auto it = m->wbbuf.begin(); it != m->wbbuf.end(); ){
+    if(dram_insert(m->mainmem, *it, TRUE)){
+      it = m->wbbuf.erase(it);
+    }else{
+      ++it;
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -64,6 +91,9 @@ void  memsys_print_state(MemSys *m){
 
 void  memsys_print_stats(MemSys *m){
   dram_print_stats(m->mainmem);
+  printf("MEM_WB_DELAYED  \t : %llu\n", m->s_wb_delayed);
+  printf("MEM_WB_STALLS   \t : %llu\n", m->s_wb_stalls);
+  printf("MEM_WBBUF_MAX   \t : %llu\n", m->s_wbbuf_max);
 }
 
 //////////////////////////////////////////////////////////////////////////

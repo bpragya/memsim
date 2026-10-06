@@ -83,7 +83,10 @@ struct DRAM_Bank{
     uns64 rowbufopen_cycle; // to enforce RAS constraint
     uns64 rowbufclose_cycle; // for closed page policy and for Tonmax
     uns RAA; // RFM
-  
+    uns64 last_wr_cycle; // last WR issued to this bank (for write recovery before PRE)
+    Flag  has_wr;
+    Flag  last_service_opened; // did the last service need an ACT (miss/conflict)?
+
     uns64 s_ACT;
     uns64 s_REQ;
     uns64 s_service_delay;
@@ -96,6 +99,8 @@ struct DRAM_Bank{
 DRAM_Bank*   dram_bank_new(uns bankid, uns channelid, uns num_rows);
 
 void         dram_bank_cycle(DRAM_Bank *b);
+uns64        dram_bank_pre_ready(DRAM_Bank *b);
+uns64        dram_bank_ready_cycle(DRAM_Bank *b);
 
 uns          dram_bank_insert(DRAM_Bank *b,  DRAM_ReqType type,  uns64 rowid, Addr lineaddr);
 
