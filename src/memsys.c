@@ -164,5 +164,9 @@ void  memsys_cycle(MemSys *m){
 ////////////////////////////////////////////////////////////////////
 
 void  memsys_print_stats(MemSys *m){
+  // Same order as Ramulator2's own driver: finalize computes the averaged
+  // stats (read latency, queue lengths, throughput) and closes plugin files.
+  m->frontend->finalize();
+  m->memory_system->finalize();
   m->memory_system->print_stats(std::cout);
 }
