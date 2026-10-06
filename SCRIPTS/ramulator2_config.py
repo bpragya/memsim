@@ -35,6 +35,12 @@ Usage:
     MEMSIM_RFM_THRESH=<int>              default 16   (matches -rfmth)
     MEMSIM_SCHED={frfcfs,frfcfs_rowhit}  default frfcfs (matches -dramschedpolicy)
     MEMSIM_CLOSEPAGE={0,1}               default 0    (matches -memclosepage)
+    MEMSIM_ROW_POLICY={open,adaptive,closedcap}
+                                         default open (closedcap if MEMSIM_CLOSEPAGE=1);
+                                         adaptive = adaptive open-page (BARD Table II)
+    MEMSIM_CMD_TRACE=<path>              default off: record every DRAM command to
+                                         <path>.ch0/.ch1 (for SCRIPTS/check_rowpolicy.py);
+                                         use a Linux path, and MSYS_NO_PATHCONV=1 in Git Bash
     MEMSIM_ADDR_MAP={mop4clxor,robaracoch,zen_pbpl,zen} default mop4clxor
                                          (mop4clxor/robaracoch match -drammappolicy 7/6;
                                           zen_pbpl = AMD Zen + PBPL, zen = without PBPL)
@@ -53,8 +59,10 @@ class Args:
     ref_mode = os.environ.get("MEMSIM_REF_MODE", "ab")
     rfm_mode = os.environ.get("MEMSIM_RFM_MODE", "off")
     rfm_thresh = int(os.environ.get("MEMSIM_RFM_THRESH", "16"))
+    cmd_trace = os.environ.get("MEMSIM_CMD_TRACE", "")
     sched = os.environ.get("MEMSIM_SCHED", "frfcfs")
     closepage = os.environ.get("MEMSIM_CLOSEPAGE", "0") == "1"
+    row_policy = os.environ.get("MEMSIM_ROW_POLICY", "closedcap" if closepage else "open")
     addr_map = os.environ.get("MEMSIM_ADDR_MAP", "mop4clxor")
 
 
@@ -86,11 +94,17 @@ def make_controller():
 
     refresh_manager = ramulator.refresh_manager.AllBank()  # AB scope is standard-wide default; SB refresh via REFsb is not yet exposed as a stock refresh_manager
 
-    row_policy = (
-        ramulator.row_policy.ClosedCap() if args.closepage else ramulator.row_policy.Open()
-    )
+    if args.row_policy == "adaptive":
+        row_policy = ramulator.row_policy.AdaptiveOpen()  # close a row when no queued request needs it
+    elif args.row_policy == "closedcap":
+        row_policy = ramulator.row_policy.ClosedCAP()
+    else:
+        row_policy = ramulator.row_policy.Open()
 
     plugins = []
+    if args.cmd_trace:
+        # one CSV per channel: <path>.ch0, <path>.ch1 (clock, command, address vector)
+        plugins.append(ramulator.controller_plugin.CmdTraceRecorder(path=args.cmd_trace))
     if args.rfm_mode != "off":
         plugins.append(
             ramulator.controller_plugin.RFMManager(
