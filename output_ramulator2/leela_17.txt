@@ -9,16 +9,16 @@ Initialized OS for 8388608 pages
 CORE_00_ID           	 :  0
 CORE_00_TRACE        	 : TRACES/leela_17.mtf.gz
 CORE_00_INST         	 : 1000001
-CORE_00_CYCLES       	 : 307068
+CORE_00_CYCLES       	 : 306958
 CORE_00_ACCESS       	 : 4112
 CORE_00_MISS         	 : 1612
 CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 4.11
 CORE_00_MPKI         	 : 1.61
 CORE_00_MISSRATE     	 : 39.20
-CORE_00_AVGDELAY     	 : 160.47
+CORE_00_AVGDELAY     	 : 158.86
 CORE_00_SLEEP_CYCLES 	 : 0
-CORE_00_IPC          	 : 3.257
+CORE_00_IPC          	 : 3.258
 
 L3CACHE_ACCESS       	 : 4112
 L3CACHE_MISS         	 : 1612
@@ -35,19 +35,19 @@ memory_system:
     -
       impl: GenericDDR
       id: Channel 0
-      cycles: 307068
-      row_hits: 228
+      cycles: 306958
+      row_hits: 233
       row_misses: 250
-      row_conflicts: 328
-      read_row_hits: 228
+      row_conflicts: 323
+      read_row_hits: 233
       read_row_misses: 250
-      read_row_conflicts: 328
+      read_row_conflicts: 323
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 228
+      read_row_hits_core_0: 233
       read_row_misses_core_0: 250
-      read_row_conflicts_core_0: 328
+      read_row_conflicts_core_0: 323
       num_read_reqs: 806
       num_write_reqs: 0
       num_maintenance_reqs: 19
@@ -56,15 +56,15 @@ memory_system:
       num_maintenance_reqs_served: 19
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 47087
-      read_queue_len: 45784
+      queue_len: 42509
+      read_queue_len: 41193
       write_queue_len: 0
-      priority_queue_len: 1303
+      priority_queue_len: 1316
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 129927
+      read_latency: 124989
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -85,19 +85,19 @@ memory_system:
     -
       impl: GenericDDR
       id: Channel 1
-      cycles: 307068
-      row_hits: 229
-      row_misses: 257
-      row_conflicts: 320
-      read_row_hits: 229
-      read_row_misses: 257
-      read_row_conflicts: 320
+      cycles: 306958
+      row_hits: 234
+      row_misses: 279
+      row_conflicts: 293
+      read_row_hits: 234
+      read_row_misses: 279
+      read_row_conflicts: 293
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 229
-      read_row_misses_core_0: 257
-      read_row_conflicts_core_0: 320
+      read_row_hits_core_0: 234
+      read_row_misses_core_0: 279
+      read_row_conflicts_core_0: 293
       num_read_reqs: 806
       num_write_reqs: 0
       num_maintenance_reqs: 19
@@ -106,15 +106,15 @@ memory_system:
       num_maintenance_reqs_served: 19
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 47730
-      read_queue_len: 46346
+      queue_len: 50214
+      read_queue_len: 48956
       write_queue_len: 0
-      priority_queue_len: 1384
+      priority_queue_len: 1258
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 130365
+      read_latency: 132705
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -136,7 +136,7 @@ memory_system:
 
 OS_PAGE_MISS       	 : 196
 
-SYS_CYCLES      	 : 307068
-AVG_CORE_CYCLES 	 : 307068
+SYS_CYCLES      	 : 306958
+AVG_CORE_CYCLES 	 : 306958
 
 

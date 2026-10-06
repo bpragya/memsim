@@ -16,7 +16,7 @@ CORE_00_QFULL        	 : 0
 CORE_00_APKI         	 : 9.66
 CORE_00_MPKI         	 : 1.85
 CORE_00_MISSRATE     	 : 19.15
-CORE_00_AVGDELAY     	 : 136.81
+CORE_00_AVGDELAY     	 : 136.08
 CORE_00_SLEEP_CYCLES 	 : 0
 CORE_00_IPC          	 : 3.253
 
@@ -36,18 +36,18 @@ memory_system:
       impl: GenericDDR
       id: Channel 0
       cycles: 307439
-      row_hits: 358
-      row_misses: 212
-      row_conflicts: 354
-      read_row_hits: 358
-      read_row_misses: 212
-      read_row_conflicts: 354
+      row_hits: 348
+      row_misses: 223
+      row_conflicts: 353
+      read_row_hits: 348
+      read_row_misses: 223
+      read_row_conflicts: 353
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 358
-      read_row_misses_core_0: 212
-      read_row_conflicts_core_0: 354
+      read_row_hits_core_0: 348
+      read_row_misses_core_0: 223
+      read_row_conflicts_core_0: 353
       num_read_reqs: 924
       num_write_reqs: 0
       num_maintenance_reqs: 19
@@ -56,15 +56,15 @@ memory_system:
       num_maintenance_reqs_served: 19
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 37570
-      read_queue_len: 36464
+      queue_len: 34978
+      read_queue_len: 33680
       write_queue_len: 0
-      priority_queue_len: 1106
+      priority_queue_len: 1298
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 127306
+      read_latency: 125073
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
@@ -86,18 +86,18 @@ memory_system:
       impl: GenericDDR
       id: Channel 1
       cycles: 307439
-      row_hits: 354
-      row_misses: 213
-      row_conflicts: 359
-      read_row_hits: 354
-      read_row_misses: 213
-      read_row_conflicts: 359
+      row_hits: 342
+      row_misses: 221
+      row_conflicts: 363
+      read_row_hits: 342
+      read_row_misses: 221
+      read_row_conflicts: 363
       write_row_hits: 0
       write_row_misses: 0
       write_row_conflicts: 0
-      read_row_hits_core_0: 354
-      read_row_misses_core_0: 213
-      read_row_conflicts_core_0: 359
+      read_row_hits_core_0: 342
+      read_row_misses_core_0: 221
+      read_row_conflicts_core_0: 363
       num_read_reqs: 926
       num_write_reqs: 0
       num_maintenance_reqs: 19
@@ -106,15 +106,15 @@ memory_system:
       num_maintenance_reqs_served: 19
       num_read_reqs_forwarded: 0
       num_write_reqs_coalesced: 0
-      queue_len: 37555
-      read_queue_len: 36322
+      queue_len: 37558
+      read_queue_len: 36547
       write_queue_len: 0
-      priority_queue_len: 1233
+      priority_queue_len: 1011
       queue_len_avg: 0
       read_queue_len_avg: 0
       write_queue_len_avg: 0
       priority_queue_len_avg: 0
-      read_latency: 127650
+      read_latency: 128519
       avg_read_latency: 0
       read_throughput_MBps: 0
       write_throughput_MBps: 0
