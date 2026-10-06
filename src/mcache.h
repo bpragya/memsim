@@ -46,6 +46,7 @@ struct MCache{
   uns64 s_count; // number of accesses
   uns64 s_miss; // number of misses
   uns64 s_evict; // number of evictions
+  uns64 s_writeback; // evictions of dirty lines (writebacks to memory)
 };
 
 ///////////////////////////////////////////////////////////////////

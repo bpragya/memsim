@@ -161,6 +161,7 @@ void mcache_install (MCache *c, Addr addr){
   if(entry->valid){
     c->s_evict++;
     if(entry->dirty){
+      c->s_writeback++;
       c->evicted_dirty_line = TRUE;
       c->evicted_line_addr = entry->tag;
     }
@@ -315,6 +316,7 @@ void  mcache_print_stats(MCache *c, char *header){
   printf("\n%s_ACCESS       \t : %llu",  header,  c->s_count);
   printf("\n%s_MISS         \t : %llu",  header,  c->s_miss);
   printf("\n%s_MISSRATE     \t : %6.3f", header,  missrate);
+  printf("\n%s_WRITEBACKS   \t : %llu",  header,  c->s_writeback);
   printf("\n");
 }
 

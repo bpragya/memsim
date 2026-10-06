@@ -2,7 +2,9 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <algorithm>
 #include <cmath>
+#include <deque>
 #include <iostream>
 
 #include "externs.h"
@@ -34,6 +36,25 @@ struct MemSys {
   int    fe_ratio;
   int    mem_ratio;
   int    clk_acc;
+
+  // Writebacks Ramulator2's write queue refused; retried every cycle so no
+  // writeback is ever dropped. When full, new reads are refused instead.
+  struct PendingWB { Addr lineaddr; uns coreid; };
+  std::deque<PendingWB> wbbuf;
+  uns64  outstanding_reads;  // LLC misses in flight (MSHRs in use)
+
+  // Cores refused because MSHRs or wbbuf were full, first come first served:
+  // when space frees, the core at the front gets it. Without this, cores
+  // that retry earlier in the cycle loop could starve a later core forever.
+  std::deque<uns> waitq;
+  uns64  s_wait_turn;        // reads refused because an earlier core was waiting
+
+  uns64  s_wb_sent;          // writebacks from the LLC
+  uns64  s_wb_delayed;       // ...that had to wait in wbbuf
+  uns64  s_wb_stalls;        // reads refused because wbbuf was full
+  uns64  s_wbbuf_max;        // peak wbbuf occupancy
+  uns64  s_mshr_full;        // reads refused because all MSHRs were busy
+  uns64  s_mshr_max;         // peak outstanding reads
 };
 
 ////////////////////////////////////////////////////////////////////
@@ -61,6 +82,11 @@ MemSys *memsys_new(void){
   m->fe_ratio  = m->frontend->get_clock_ratio();
   m->mem_ratio = m->memory_system->get_clock_ratio();
   m->clk_acc   = 0;
+
+  m->outstanding_reads = 0;
+  m->s_wb_sent = m->s_wb_delayed = m->s_wb_stalls = m->s_wbbuf_max = 0;
+  m->s_mshr_full = m->s_mshr_max = 0;
+  m->s_wait_turn = 0;
 
   memsys_print_dram_timings(m);
   return m;
@@ -150,9 +176,26 @@ void  memsys_print_dram_timings(MemSys *m){
 // scale by LINESIZE at this boundary.
 //////////////////////////////////////////////////////////////////////////
 
-Flag memsys_access(MemSys *m, Addr lineaddr, uns coreid, uns robid, uns64 inst_num, Addr wb_lineaddr){
+Flag memsys_access(MemSys *m, Addr lineaddr, uns coreid, uns robid, uns64 inst_num){
 
-  auto on_read_done = [coreid, robid, inst_num](Ramulator::Request &req){
+  // back-pressure: the core sleeps and retries this read later
+  bool wb_full   = (m->wbbuf.size() >= MEM_WBBUF_SIZE);
+  bool mshr_full = (LLC_MSHRS && m->outstanding_reads >= LLC_MSHRS);
+  bool waiting   = std::find(m->waitq.begin(), m->waitq.end(), coreid) != m->waitq.end();
+  if(wb_full || mshr_full){
+    if(wb_full)   m->s_wb_stalls++;
+    if(mshr_full) m->s_mshr_full++;
+    if(!waiting)  m->waitq.push_back(coreid);
+    return FALSE;
+  }
+  if(!m->waitq.empty() && m->waitq.front() != coreid){
+    m->s_wait_turn++;  // space is free, but an earlier-refused core goes first
+    if(!waiting)  m->waitq.push_back(coreid);
+    return FALSE;
+  }
+
+  auto on_read_done = [m, coreid, robid, inst_num](Ramulator::Request &req){
+    m->outstanding_reads--;
     mcore_rob_wakeup(mcore[coreid], robid, inst_num);
   };
 
@@ -163,21 +206,42 @@ Flag memsys_access(MemSys *m, Addr lineaddr, uns coreid, uns robid, uns64 inst_n
       on_read_done,
       (int)LINESIZE);
 
-  if(wb_lineaddr){
-    // Best-effort: mirrors the original dram_insert(..., wb) call, whose
-    // accept/reject result was never checked either -- writebacks don't
-    // block anything, so a dropped writeback here is not observable by
-    // the core.
-    auto on_wb_done = [](Ramulator::Request &req){};
-    m->frontend->receive_external_requests(
-        Ramulator::Request::Type::Write,
-        (Ramulator::Addr_t)(wb_lineaddr * LINESIZE),
-        (int)coreid,
-        on_wb_done,
-        (int)LINESIZE);
+  if(accepted){
+    if(!m->waitq.empty() && m->waitq.front() == coreid){
+      m->waitq.pop_front();
+    }
+    m->outstanding_reads++;
+    if(m->outstanding_reads > m->s_mshr_max){
+      m->s_mshr_max = m->outstanding_reads;
+    }
   }
-
   return accepted ? TRUE : FALSE;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Writebacks are never dropped: one Ramulator2's write queue refuses waits
+// in wbbuf and is retried every cycle in memsys_cycle().
+//////////////////////////////////////////////////////////////////////////
+
+static bool memsys_send_writeback(MemSys *m, Addr lineaddr, uns coreid){
+  auto on_wb_done = [](Ramulator::Request &req){};
+  return m->frontend->receive_external_requests(
+      Ramulator::Request::Type::Write,
+      (Ramulator::Addr_t)(lineaddr * LINESIZE),
+      (int)coreid,
+      on_wb_done,
+      (int)LINESIZE);
+}
+
+void  memsys_writeback(MemSys *m, Addr lineaddr, uns coreid){
+  m->s_wb_sent++;
+  if(!memsys_send_writeback(m, lineaddr, coreid)){
+    m->wbbuf.push_back({lineaddr, coreid});
+    m->s_wb_delayed++;
+    if(m->wbbuf.size() > m->s_wbbuf_max){
+      m->s_wbbuf_max = m->wbbuf.size();
+    }
+  }
 }
 
 
@@ -190,12 +254,32 @@ void  memsys_cycle(MemSys *m){
     m->clk_acc -= m->fe_ratio;
     m->memory_system->tick();
   }
+
+  // retry waiting writebacks, oldest first; a full write queue on one
+  // channel does not hold back writebacks to the other
+  for(auto it = m->wbbuf.begin(); it != m->wbbuf.end(); ){
+    if(memsys_send_writeback(m, it->lineaddr, it->coreid)){
+      it = m->wbbuf.erase(it);
+    }else{
+      ++it;
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
 void  memsys_print_stats(MemSys *m){
+  printf("\nMEM_WB_SENT        \t : %llu", m->s_wb_sent);
+  printf("\nMEM_WB_DELAYED     \t : %llu", m->s_wb_delayed);
+  printf("\nMEM_WB_STALLS      \t : %llu", m->s_wb_stalls);
+  printf("\nMEM_WBBUF_MAX      \t : %llu", m->s_wbbuf_max);
+  printf("\nMEM_WBBUF_LEFT     \t : %llu", (uns64)m->wbbuf.size());
+  printf("\nMEM_MSHR_FULL      \t : %llu", m->s_mshr_full);
+  printf("\nMEM_MSHR_MAX       \t : %llu", m->s_mshr_max);
+  printf("\nMEM_WAIT_TURN      \t : %llu", m->s_wait_turn);
+  printf("\n");
+
   // Same order as Ramulator2's own driver: finalize computes the averaged
   // stats (read latency, queue lengths, throughput) and closes plugin files.
   m->frontend->finalize();

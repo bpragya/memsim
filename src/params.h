@@ -24,6 +24,8 @@ uns64       L3_ASSOC        = 16;
 uns64       L3_LATENCY      = 24; // cycles
 uns64       L3_REPL         = 0; //0:LRU 1:RND 2:SRRIP
 uns64       L3_PERFECT      = 0; //simulate 100% hit rate for L3
+uns64       LLC_MSHRS       = 0; // max outstanding LLC misses (reads) across cores; 0 = unlimited
+uns64       MEM_WBBUF_SIZE  = 32; // writebacks waiting for a DRAM write-queue slot before reads are refused
 
 
 uns64       MEM_SIZE_MB     = 32768; 
@@ -85,6 +87,8 @@ void die_usage() {
     printf("               -l3sizemb    <num>    Set L3  Cache size to <num> MB (Default: 1MB)\n");
     printf("               -l3assoc     <num>    Set L3  Cache assoc <num> (Default: 16)\n");
     printf("               -l3perfect            Set L3  to 100 percent hit rate(Default:off)\n");
+    printf("               -llcmshrs    <num>    Max outstanding LLC misses, all cores (Default: 0 = unlimited)\n");
+    printf("               -wbbufsize   <num>    Writebacks waiting for a DRAM write-queue slot before reads stall (Default: 32)\n");
     printf("               -memclosepage         Set DRAM to close page (Default:off)\n");
     printf("               -ramulatorconfig <path> Path to Ramulator2 YAML config (Default: ramulator2_config.yaml)\n");
 
@@ -177,6 +181,20 @@ void read_params(int argc, char **argv){
 		}
 	    }
 
+
+	    else if (!strcmp(argv[ii], "-llcmshrs")) {
+		if (ii < argc - 1) {
+		    LLC_MSHRS = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-wbbufsize")) {
+		if (ii < argc - 1) {
+		    MEM_WBBUF_SIZE = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
 
 	    else if (!strcmp(argv[ii], "-l3latency")) {
 		if (ii < argc - 1) {		  

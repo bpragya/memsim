@@ -18,6 +18,8 @@ extern uns64       ROB_SIZE;
 
 extern uns64       L3_LATENCY;
 extern uns64       L3_PERFECT;
+extern uns64       LLC_MSHRS;
+extern uns64       MEM_WBBUF_SIZE;
 
 extern uns64       MEM_SIZE_MB;
 extern uns64       MEM_CHANNELS;

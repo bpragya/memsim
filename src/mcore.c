@@ -95,6 +95,7 @@ void mcore_cycle (MCore *c){
 
     Addr orig_lineaddr = os_v2p_lineaddr(c->os, c->trace_va, c->id);
     Addr wb_lineaddr   = 0;
+    Flag do_wb         = FALSE; // flag, not wb_lineaddr!=0: line 0 is a valid address
 
     if(c->inst_num >= c->trace_inst_num){
 
@@ -114,6 +115,7 @@ void mcore_cycle (MCore *c){
 
 	  if(MCORE_DO_WRITEBACKS && c->l3cache->evicted_dirty_line){
 	    wb_lineaddr =  c->l3cache->evicted_line_addr;
+	    do_wb = TRUE;
 	  }
        
 	  c->miss_count++;
@@ -131,7 +133,15 @@ void mcore_cycle (MCore *c){
 	printf("CORE-RDSEND for CoreID: %u ROBID: %u InstNum: %llu Cycle: %llu\n", c->id, myrobid, c->inst_num, c->cycle);
       }
        
-      if(memsys_access(c->memsys, orig_lineaddr, c->id, myrobid, c->inst_num, wb_lineaddr)==FAIL){
+      // read first, then the eviction's writeback, in the same cycle; the
+      // writeback is sent even if the read is refused (the line is already
+      // evicted) and is not repeated when the read is retried
+      Flag rd_ok = memsys_access(c->memsys, orig_lineaddr, c->id, myrobid, c->inst_num);
+      if(do_wb){
+	memsys_writeback(c->memsys, wb_lineaddr, c->id);
+      }
+
+      if(rd_ok==FAIL){
 
 	DBGMSGC(c->id, "SLEEPING: Core: %u ROBID: %u InstNum: %llu Cycle: %llu\n",
 		      c->id, myrobid,  c->inst_num, c->cycle);
@@ -323,7 +333,7 @@ void  mcore_rob_wakeup(MCore *c,  uns robid, uns64 inst_num){
 Flag  mcore_retry_sleeping_request(MCore *c){
   c->sleep_cycle_count++;
 	
-  if(memsys_access(c->memsys, c->sleep_lineaddr, c->id, c->sleep_robid, c->sleep_inst_num,0)){
+  if(memsys_access(c->memsys, c->sleep_lineaddr, c->id, c->sleep_robid, c->sleep_inst_num)){
     c->rob.entries[c->sleep_robid].birth_time = c->cycle;
     c->rob.entries[c->sleep_robid].ready_time = c->cycle + DEFAULT_MEM_DELAY;
     c->rob.entries[c->sleep_robid].inst_num = c->sleep_inst_num;
