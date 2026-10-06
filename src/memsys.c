@@ -35,6 +35,14 @@ MemSys *memsys_new(void){
 
   Ramulator::ConfigNode config = Ramulator::Config::parse_config_file(RAMULATOR_CONFIG_PATH);
 
+  // Tell Ramulator2 how many cores send requests (source_id = core id), so
+  // its per-core stats are sized for -ratemode / multiple traces.
+  Ramulator::ConfigNode::Map root = config.map();
+  Ramulator::ConfigNode::Map frontend = root["frontend"].map();
+  frontend["num_cores"] = Ramulator::ConfigNode(num_threads);
+  root["frontend"] = Ramulator::ConfigNode(frontend);
+  config = Ramulator::ConfigNode(root);
+
   m->frontend      = Ramulator::Factory::create_frontend(config);
   m->memory_system = Ramulator::Factory::create_memory_system(config);
 
