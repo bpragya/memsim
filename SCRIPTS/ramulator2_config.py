@@ -41,6 +41,8 @@ Usage:
     MEMSIM_CMD_TRACE=<path>              default off: record every DRAM command to
                                          <path>.ch0/.ch1 (for SCRIPTS/check_rowpolicy.py);
                                          use a Linux path, and MSYS_NO_PATHCONV=1 in Git Bash
+    MEMSIM_DRAIN_LOG=<path>              default off: one line per write drain to
+                                         <path>.ch0/.ch1 (for SCRIPTS/check_write_stats.py)
     MEMSIM_ADDR_MAP={mop4clxor,robaracoch,zen_pbpl,zen} default mop4clxor
                                          (mop4clxor/robaracoch match -drammappolicy 7/6;
                                           zen_pbpl = AMD Zen + PBPL, zen = without PBPL)
@@ -60,6 +62,7 @@ class Args:
     rfm_mode = os.environ.get("MEMSIM_RFM_MODE", "off")
     rfm_thresh = int(os.environ.get("MEMSIM_RFM_THRESH", "16"))
     cmd_trace = os.environ.get("MEMSIM_CMD_TRACE", "")
+    drain_log = os.environ.get("MEMSIM_DRAIN_LOG", "")
     sched = os.environ.get("MEMSIM_SCHED", "frfcfs")
     closepage = os.environ.get("MEMSIM_CLOSEPAGE", "0") == "1"
     row_policy = os.environ.get("MEMSIM_ROW_POLICY", "closedcap" if closepage else "open")
@@ -113,6 +116,10 @@ def make_controller():
             )
         )
 
+    extra = {}
+    if args.drain_log:
+        extra["drain_log"] = args.drain_log  # one CSV line per write drain, per channel
+
     return ramulator.controller.GenericDDR(
         dram=dram,
         scheduler=scheduler,
@@ -120,6 +127,7 @@ def make_controller():
         row_policy=row_policy,
         addr_mapper=make_addr_mapper(),
         controller_plugins=plugins,
+        **extra,
     )
 
 
