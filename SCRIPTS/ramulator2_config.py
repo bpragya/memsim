@@ -11,18 +11,12 @@ DDR5 is the only Ramulator2-supported standard with RFM commands
 org_preset "DDR5_16Gb_x8" gives bankgroup=8 x bank=4 = 32 banks/channel
 at rank=1, matching MEM_BANKS/MEM_CHANNELS exactly.
 
-NOTE on timing fidelity: timing_preset="DDR5_8000AN" is chosen specifically
-because its tCK_ps=250 matches memsim's assumed 4GHz/0.25ns-per-cycle clock
-exactly (src/memsys.c calls memory_system->tick() once per memsim cycle,
-with no conversion factor -- so the two clocks must line up, or DRAM
-operations resolve in the wrong number of memsim cycles). This does NOT
-make every individual nCL/nRCD/nRAS/... constant bit-identical to memsim's
-original hand-tuned tRC/tCAS/tRAS/... values from params.h (those are
-JEDEC-standard DDR5-8000 timings, not memsim's own approximated numbers),
-and row-buffer size / address-mapping scheme are still stock choices, not
-calibrated to memsim's original custom model. Those remain follow-on
-calibration work -- this config removes the systematic clock-domain
-distortion and gets latencies into the correct real-ns ballpark.
+Clocks: memsim models a 4 GHz core (one cycle = 0.25 ns). The frontend and
+memory-system clock_ratio values are derived from the DRAM preset's tCK so
+that src/memsys.c ticks Ramulator2 at the DRAM's real speed: it calls
+memory_system->tick() memory_ratio/frontend_ratio times per memsim cycle.
+DDR5_8000AN (tCK 250 ps) gives 1:1; DDR5_4800B (tCK 416 ps) gives 5:3, i.e.
+3 DRAM cycles per 5 memsim cycles.
 
 Usage:
   python -m ramulator export SCRIPTS/ramulator2_config.py -o src/ramulator2_config.yaml
@@ -53,6 +47,7 @@ Usage:
 """
 
 import os
+from fractions import Fraction
 
 import ramulator
 
@@ -82,12 +77,30 @@ def make_addr_mapper():
     return ramulator.addr_mapper.MOP4CLXOR()
 
 
-def make_controller():
-    dram = ramulator.dram.DDR5(
+MEMSIM_CYCLE_PS = 250  # memsim models a 4 GHz core: one cycle = 0.25 ns
+
+
+def make_dram():
+    return ramulator.dram.DDR5(
         org_preset="DDR5_16Gb_x8",
         timing_preset="DDR5_8000AN",
         rank=1,
     )
+
+
+def clock_ratios():
+    """(frontend, memory_system) clock_ratio for the DRAM preset's tCK.
+
+    memsim ticks the DRAM memory/frontend times per memsim cycle, so the
+    ratio frontend/memory must equal tCK / memsim cycle (416/250 -> 5/3).
+    """
+    _, timing = make_dram().resolve()
+    ratio = Fraction(timing["tCK_ps"], MEMSIM_CYCLE_PS).limit_denominator(16)
+    return ratio.numerator, ratio.denominator
+
+
+def make_controller():
+    dram = make_dram()
 
     scheduler = (
         ramulator.scheduler.FRFCFS_RowHit()
@@ -132,10 +145,11 @@ def make_controller():
 
 
 # 2 channels, matching memsim's default MEM_CHANNELS=2 / MEM_BANKS=64
-frontend = ramulator.frontend.External(clock_ratio=1)
+frontend_ratio, memory_ratio = clock_ratios()
+frontend = ramulator.frontend.External(clock_ratio=frontend_ratio)
 
 mem = ramulator.memory_system.GenericDRAM(
-    clock_ratio=1,
+    clock_ratio=memory_ratio,
     controllers=[make_controller(), make_controller()],
     channel_mapper=ramulator.channel_mapper.CacheLineInterleave(),
 )

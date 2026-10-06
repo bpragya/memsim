@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <cmath>
 #include <iostream>
 
 #include "externs.h"
@@ -22,9 +23,17 @@ extern char   RAMULATOR_CONFIG_PATH[1024];
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
+#define MEMSIM_CYCLE_NS 0.25  // memsim models a 4 GHz core
+
 struct MemSys {
   Ramulator::IFrontEnd     *frontend;
   Ramulator::IMemorySystem *memory_system;
+
+  // Clock domains, as in Ramulator2's own driver: per memsim cycle the DRAM
+  // ticks mem_ratio/fe_ratio times (DDR5-4800: 3 ticks per 5 memsim cycles).
+  int    fe_ratio;
+  int    mem_ratio;
+  int    clk_acc;
 };
 
 ////////////////////////////////////////////////////////////////////
@@ -48,6 +57,10 @@ MemSys *memsys_new(void){
 
   m->frontend->connect_memory_system(m->memory_system);
   m->memory_system->connect_frontend(m->frontend);
+
+  m->fe_ratio  = m->frontend->get_clock_ratio();
+  m->mem_ratio = m->memory_system->get_clock_ratio();
+  m->clk_acc   = 0;
 
   memsys_print_dram_timings(m);
   return m;
@@ -120,6 +133,13 @@ void  memsys_print_dram_timings(MemSys *m){
 	   r.name, r.desc, r.ram2, cyc, ns, r.paper_cyc, r.paper_ns,
 	   (cyc == r.paper_cyc) ? "yes" : "NO");
   }
+
+  // DRAM cycle length implied by the clock ratio; must match tCK, otherwise
+  // the timings above are right in cycles but wrong in real time
+  double dram_cycle_ns = MEMSIM_CYCLE_NS * m->fe_ratio / m->mem_ratio;
+  printf("  Clock: %d DRAM cycle(s) per %d memsim cycle(s) = %.3f ns per DRAM cycle (memsim cycle %.2f ns)%s\n",
+	 m->mem_ratio, m->fe_ratio, dram_cycle_ns, MEMSIM_CYCLE_NS,
+	 (fabs(dram_cycle_ns - tck) <= 0.01 * tck) ? "" : "   WARNING: does not match tCK");
   printf("\n");
 }
 
@@ -165,7 +185,11 @@ Flag memsys_access(MemSys *m, Addr lineaddr, uns coreid, uns robid, uns64 inst_n
 ////////////////////////////////////////////////////////////////////
 
 void  memsys_cycle(MemSys *m){
-  m->memory_system->tick();
+  m->clk_acc += m->mem_ratio;
+  while(m->clk_acc >= m->fe_ratio){
+    m->clk_acc -= m->fe_ratio;
+    m->memory_system->tick();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
