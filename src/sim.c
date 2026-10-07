@@ -240,6 +240,9 @@ int main(int argc, char** argv)
       }
       if(all_warm){
 	end_warmup();
+	if(INST_LIMIT == 0){
+	  break;  // warmup-only run: everything is in the warmup file
+	}
       }
     }
     if (cycle - last_printdot_cycle >= DOT_INTERVAL){
@@ -252,6 +255,12 @@ int main(int argc, char** argv)
   //--------------------------------------------------------------------
   // -- Print statistics
   //--------------------------------------------------------------------
+
+  if(WARMUP_INST && INST_LIMIT == 0){
+    memsys_finalize(memsys);  // close Ramulator2's log files
+    printf("\nWarmup-only run (-inst_limit 0): all statistics are in %s\n\n", WARMUP_FILE);
+    return 0;
+  }
 
   print_report(TRUE, WARMUP_INST ? cycle - warmup_end_cycle : cycle);
 

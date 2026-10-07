@@ -1,0 +1,180 @@
+MEMSIM WARMUP STATS: the first 25000000 instructions per core (19247501 cycles),
+excluded from the main results.
+
+
+------------------------------------
+------  MEMSIM.V1.1  ----------
+------------------------------------
+
+CORE_00_ID           	 :  0
+CORE_00_TRACE        	 : TRACES/bwaves_17.mtf.gz
+CORE_00_INST         	 : 25000000
+CORE_00_CYCLES       	 : 19247501
+CORE_00_ACCESS       	 : 1229622
+CORE_00_MISS         	 : 1047035
+CORE_00_QFULL        	 : 0
+CORE_00_APKI         	 : 49.18
+CORE_00_MPKI         	 : 41.88
+CORE_00_MISSRATE     	 : 85.15
+CORE_00_AVGDELAY     	 : 238.60
+CORE_00_SLEEP_CYCLES 	 : 0
+CORE_00_IPC          	 : 1.299
+
+L3CACHE_ACCESS       	 : 1229622
+L3CACHE_MISS         	 : 1047035
+L3CACHE_MISSRATE     	 : 85.151
+L3CACHE_WRITEBACKS   	 : 20880
+
+MEM_WB_SENT        	 : 20880
+MEM_WB_DELAYED     	 : 0
+MEM_WB_STALLS      	 : 0
+MEM_WBBUF_MAX      	 : 0
+MEM_WBBUF_LEFT     	 : 0
+MEM_MSHR_FULL      	 : 0
+MEM_MSHR_MAX       	 : 44
+MEM_WAIT_TURN      	 : 0
+memory_system:
+  impl: GenericDRAM
+  total_num_read_requests: 1047035
+  total_num_write_requests: 20880
+  channel_mapper:
+    impl: CacheLineInterleave
+
+
+  controller:
+    -
+      impl: GenericDDR
+      id: Channel 0
+      cycles: 11548500
+      row_hits: 61600
+      row_misses: 468218
+      row_conflicts: 4134
+      read_row_hits: 59765
+      read_row_misses: 459617
+      read_row_conflicts: 4130
+      write_row_hits: 1835
+      write_row_misses: 8601
+      write_row_conflicts: 4
+      read_row_hits_core_0: 59765
+      read_row_misses_core_0: 459617
+      read_row_conflicts_core_0: 4130
+      num_read_reqs: 523517
+      num_write_reqs: 10440
+      num_maintenance_reqs: 1231
+      num_read_reqs_served: 523507
+      num_write_reqs_served: 10440
+      num_maintenance_reqs_served: 1231
+      num_read_reqs_forwarded: 0
+      num_write_reqs_coalesced: 0
+      queue_len: 34709961
+      read_queue_len: 31560117
+      write_queue_len: 3036660
+      priority_queue_len: 113184
+      queue_len_avg: 3.00558
+      read_queue_len_avg: 2.73283
+      write_queue_len_avg: 0.262948
+      priority_queue_len_avg: 0.00980075
+      read_latency: 75397922
+      avg_read_latency: 144.025
+      read_throughput_MBps: 6974.03
+      write_throughput_MBps: 139.079
+      total_throughput_MBps: 7113.11
+      write_drains: 0
+      drain_writes: 0
+      drain_banks_total: 0
+      avg_write_blp: 0
+      drain_wr2wr_gaps: 0
+      drain_wr2wr_total: 0
+      avg_drain_wr2wr_cycles: 0
+      write_mode_cycles: 310485
+      write_mode_pct: 2.68853
+      scheduler:
+        impl: FRFCFS
+
+      refresh_manager:
+        impl: AllBank
+
+
+      row_policy:
+        impl: AdaptiveOpen
+        rows_kept_open: 66415
+        rows_closed_rda: 459459
+        rows_closed_wra: 8073
+        auto_precharge_not_ready: 0
+
+      addr_mapper:
+        impl: ZenPBPL
+
+
+    -
+      impl: GenericDDR
+      id: Channel 1
+      cycles: 11548500
+      row_hits: 64550
+      row_misses: 464500
+      row_conflicts: 4907
+      read_row_hits: 62655
+      read_row_misses: 455961
+      read_row_conflicts: 4901
+      write_row_hits: 1895
+      write_row_misses: 8539
+      write_row_conflicts: 6
+      read_row_hits_core_0: 62655
+      read_row_misses_core_0: 455961
+      read_row_conflicts_core_0: 4901
+      num_read_reqs: 523518
+      num_write_reqs: 10440
+      num_maintenance_reqs: 1231
+      num_read_reqs_served: 523514
+      num_write_reqs_served: 10440
+      num_maintenance_reqs_served: 1231
+      num_read_reqs_forwarded: 0
+      num_write_reqs_coalesced: 0
+      queue_len: 34749948
+      read_queue_len: 31559624
+      write_queue_len: 3077118
+      priority_queue_len: 113206
+      queue_len_avg: 3.00904
+      read_queue_len_avg: 2.73279
+      write_queue_len_avg: 0.266452
+      priority_queue_len_avg: 0.00980266
+      read_latency: 75318897
+      avg_read_latency: 143.872
+      read_throughput_MBps: 6974.12
+      write_throughput_MBps: 139.079
+      total_throughput_MBps: 7113.2
+      write_drains: 0
+      drain_writes: 0
+      drain_banks_total: 0
+      avg_write_blp: 0
+      drain_wr2wr_gaps: 0
+      drain_wr2wr_total: 0
+      avg_drain_wr2wr_cycles: 0
+      write_mode_cycles: 301823
+      write_mode_pct: 2.61353
+      scheduler:
+        impl: FRFCFS
+
+      refresh_manager:
+        impl: AllBank
+
+
+      row_policy:
+        impl: AdaptiveOpen
+        rows_kept_open: 70164
+        rows_closed_rda: 455811
+        rows_closed_wra: 7979
+        auto_precharge_not_ready: 0
+
+      addr_mapper:
+        impl: ZenPBPL
+
+
+
+
+OS_PAGE_MISS       	 : 16368
+
+SYS_CYCLES      	 : 19247501
+AVG_CORE_CYCLES 	 : 19247501
+
+

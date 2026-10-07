@@ -87,7 +87,7 @@ void die_usage() {
     printf("Trace driven DRAM-cache based memory-system simulator\n");
 
     printf("   Option (examples)\n");
-    printf("               -inst_limit  <num>    Set instruction limit (Default: 0)\n");
+    printf("               -inst_limit  <num>    Set instruction limit (Default: 0; with -warmup, 0 = stop after warmup)\n");
     printf("               -warmup      <num>    Warm up <num> instructions per core, then reset stats and\n");
     printf("                                     measure -inst_limit more (Default: 0 = no warmup)\n");
     printf("               -warmupfile  <path>   Write the warmup stats here (Default: output/<trace>_warmup.txt)\n");

@@ -16,6 +16,7 @@ void    memsys_print_stats(MemSys *m);        // end of run (finalizes Ramulator
 void    memsys_print_snapshot(MemSys *m);     // mid-run report (end of warmup)
 void    memsys_print_counters(MemSys *m);
 void    memsys_reset_stats(MemSys *m);        // end of warmup
+void    memsys_finalize(MemSys *m);           // end of run: flush and close Ramulator2's files
 void    memsys_print_dram_timings(MemSys *m);
 uns     memsys_bank_of(MemSys *m, Addr lineaddr);   // DRAM bank of a line, 0..memsys_num_banks()-1
 uns     memsys_num_banks(MemSys *m);
