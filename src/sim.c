@@ -35,6 +35,12 @@ MCore       *mcore[MAX_THREADS];
  * Functions
  ***************************************************************************************/
 
+// DRAM bank of an LLC line, for BARD's BLP-Tracker
+static uns llc_bank_of(Addr lineaddr)
+{
+  return memsys_bank_of(memsys, lineaddr);
+}
+
 void print_dots()
 {
   uns ii;
@@ -211,6 +217,15 @@ int main(int argc, char** argv)
     exit(0);
   }
   LLC = mcache_new(l3sets, L3_ASSOC, L3_REPL);
+  if(BARD_POLICY || BARD_LOG_FILE[0]){
+    mcache_bard_init(LLC, BARD_POLICY, llc_bank_of, memsys_num_banks(memsys), memsys_banks_per_channel(memsys));
+    static const char *names[] = {"off (LRU)", "BARD-E", "BARD-C", "BARD-H"};
+    printf("BARD: %s; BLP-Tracker %u banks, self-reset per %u-bank sub-channel\n",
+	   names[BARD_POLICY], memsys_num_banks(memsys), memsys_banks_per_channel(memsys));
+  }
+  if(BARD_LOG_FILE[0]){
+    mcache_bard_log(LLC, BARD_LOG_FILE, BARD_LOG_EVENTS);
+  }
 
   for(ii=0; ii<num_threads; ii++){
     mcore[ii] = mcore_new( memsys, os, LLC, addr_trace_filename[ii], ii);

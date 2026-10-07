@@ -28,6 +28,9 @@ uns64       L3_REPL         = 0; //0:LRU 1:RND 2:SRRIP
 uns64       L3_PERFECT      = 0; //simulate 100% hit rate for L3
 uns64       LLC_MSHRS       = 0; // max outstanding LLC misses (reads) across cores; 0 = unlimited
 uns64       MEM_WBBUF_SIZE  = 32; // writebacks waiting for a DRAM write-queue slot before reads are refused
+uns64       BARD_POLICY     = 0;  // -bard: 0 off, 1 BARD-E, 2 BARD-C, 3 BARD-H (LLC replacement, needs LRU)
+char        BARD_LOG_FILE[1024] = ""; // -bardlog: log LLC eviction decisions here (SCRIPTS/check_bard.py)
+uns64       BARD_LOG_EVENTS = 100000; // -bardlogn: how many evictions to log
 
 
 uns64       MEM_SIZE_MB     = 32768; 
@@ -98,6 +101,9 @@ void die_usage() {
     printf("               -llcmshrs    <num>    Max outstanding LLC misses, all cores (Default: 0 = unlimited)\n");
     printf("               -checkmap    <num>    Print the DRAM bank mapping of <num> lines and exit\n");
     printf("               -wbbufsize   <num>    Writebacks waiting for a DRAM write-queue slot before reads stall (Default: 32)\n");
+    printf("               -bard        <num>    BARD LLC policy: 0 off, 1 BARD-E, 2 BARD-C, 3 BARD-H (Default: 0)\n");
+    printf("               -bardlog     <path>   Log the first -bardlogn LLC evictions (Default: off)\n");
+    printf("               -bardlogn    <num>    Number of evictions to log (Default: 100000)\n");
     printf("               -memclosepage         Set DRAM to close page (Default:off)\n");
     printf("               -ramulatorconfig <path> Path to Ramulator2 YAML config (Default: ramulator2_config.yaml)\n");
 
@@ -201,6 +207,27 @@ void read_params(int argc, char **argv){
 	    else if (!strcmp(argv[ii], "-llcmshrs")) {
 		if (ii < argc - 1) {
 		    LLC_MSHRS = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-bard")) {
+		if (ii < argc - 1) {
+		    BARD_POLICY = atoi(argv[ii+1]);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-bardlog")) {
+		if (ii < argc - 1) {
+		    strncpy(BARD_LOG_FILE, argv[ii+1], sizeof(BARD_LOG_FILE) - 1);
+		    ii += 1;
+		}
+	    }
+
+	    else if (!strcmp(argv[ii], "-bardlogn")) {
+		if (ii < argc - 1) {
+		    BARD_LOG_EVENTS = atoll(argv[ii+1]);
 		    ii += 1;
 		}
 	    }
@@ -443,6 +470,15 @@ void read_params(int argc, char **argv){
     }
     if (num_threads==0) {
 	die_message("Must provide valid at least one addr_trace");
+    }
+    if (BARD_POLICY > 3) {
+	die_message("-bard must be 0 (off), 1 (BARD-E), 2 (BARD-C) or 3 (BARD-H)");
+    }
+    if (BARD_POLICY > 1) {
+	die_message("-bard: only BARD-E (1) is implemented so far");
+    }
+    if (BARD_POLICY && L3_REPL != 0) {
+	die_message("-bard works on top of LRU: use -l3repl 0");
     }
 
     if( RATE_MODE_THREADS ){
