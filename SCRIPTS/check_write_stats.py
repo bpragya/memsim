@@ -54,6 +54,7 @@ for ch, logpath in enumerate(sorted(glob.glob(log + '.ch*'))):
     drains = mismatched = 0
     tot = dict(drain_writes=0, drain_banks_total=0, drain_wr2wr_gaps=0, drain_wr2wr_total=0)
     max_blp = 0
+    min_writes = None  # watermarks guarantee >= high - low writes per drain
     # A "# stats reset" line (end of warmup) restarts the totals that are
     # compared with the printed stats; every drain is still checked.
     log_lines = open(logpath).read().splitlines()
@@ -63,6 +64,7 @@ for ch, logpath in enumerate(sorted(glob.glob(log + '.ch*'))):
             drains = 0
             tot = dict.fromkeys(tot, 0)
             max_blp = 0
+            min_writes = None
             continue
         d = dict(zip(header.split(','), line.split(',')))
         start, mode_end, close = int(d['start']), int(d['mode_end']), int(d['close'])
@@ -84,6 +86,7 @@ for ch, logpath in enumerate(sorted(glob.glob(log + '.ch*'))):
             tot['drain_wr2wr_total'] += logged[2]
             tot['drain_wr2wr_gaps'] += logged[3]
             max_blp = max(max_blp, logged[1])
+            min_writes = logged[0] if min_writes is None else min(min_writes, logged[0])
 
     # smallest WR-to-WR gaps on the whole channel
     min_any = min_same_bg = None
@@ -105,6 +108,7 @@ for ch, logpath in enumerate(sorted(glob.glob(log + '.ch*'))):
     w2w = tot['drain_wr2wr_total'] / tot['drain_wr2wr_gaps'] if tot['drain_wr2wr_gaps'] else 0
     print(f'ch{ch}: {drains} drains, avg BLP {blp:.2f} (max {max_blp} of {len(banks_per_channel)} banks), '
           f'avg WR-to-WR {w2w:.2f} cycles')
+    print(f'  fewest writes in a drain: {min_writes} (at least high - low watermark)')
     print(f'  drains whose trace window disagrees with the log: {mismatched}')
     print(f'  log totals match printed stats: {totals_ok}')
     print(f'  smallest WR-to-WR gap: any bank {min_any}, same bank group {min_same_bg}')
