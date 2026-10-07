@@ -474,8 +474,8 @@ void read_params(int argc, char **argv){
     if (BARD_POLICY > 3) {
 	die_message("-bard must be 0 (off), 1 (BARD-E), 2 (BARD-C) or 3 (BARD-H)");
     }
-    if (BARD_POLICY > 1) {
-	die_message("-bard: only BARD-E (1) is implemented so far");
+    if (BARD_POLICY > 2) {
+	die_message("-bard: only BARD-E (1) and BARD-C (2) are implemented so far");
     }
     if (BARD_POLICY && L3_REPL != 0) {
 	die_message("-bard works on top of LRU: use -l3repl 0");

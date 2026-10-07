@@ -27,6 +27,7 @@ struct MCache_Entry {
     uns64   last_access;
     Addr    orig_lineaddr;
     uns     bank;      // DRAM bank of the line (set on install when bank_of is set)
+    Flag    cleansed;  // BARD-C wrote it back and it has not been written again since
 };
 
 // BARD (Bank-Aware Replacement Decisions, Vittal & Qureshi, HPCA 2026)
@@ -54,6 +55,8 @@ struct MCache{
 
   Flag evicted_dirty_line;
   Addr evicted_line_addr;
+  Flag cleansed_line;       // BARD-C: this line was written back and stays cached (clean)
+  Addr cleansed_line_addr;
 
   uns64 s_count; // number of accesses (also the LRU clock: never reset)
   uns64 s_count_base; // s_count at the last stats reset
@@ -72,8 +75,13 @@ struct MCache{
   FILE  *bard_log;          // -bardlog: every eviction decision, for SCRIPTS/check_bard.py
   uns64 bard_log_left;
 
-  uns64 s_lru_evict;        // evictions of the LRU line (no BARD override)
+  // every eviction is exactly one of these three (BARD Fig. 10 breakdown)
+  uns64 s_lru_evict;        // the LRU line, nothing cleansed
   uns64 s_bard_override;    // BARD-E: evicted a dirty line other than the LRU victim
+  uns64 s_bard_cleanse;     // BARD-C: LRU line evicted and another dirty line written back
+                            // (cleanses are DRAM writes too, not counted in s_writeback)
+  uns64 s_cleanse_rewritten; // cleansed lines written again while cached: each needs
+                             // one more writeback later (BARD-C's extra writes)
   uns64 s_tracker_reset;    // BLP-Tracker sub-channel self-resets
 };
 

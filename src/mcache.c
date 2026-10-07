@@ -9,8 +9,9 @@
 #define MCACHE_SRRIP_INIT 1
 
 static uns  mcache_bard_e(MCache *c, uns set, uns victim);
+static int  mcache_bard_c(MCache *c, uns set);
 static void mcache_bard_track_writeback(MCache *c, uns bank);
-static void mcache_bard_log_event(MCache *c, uns set, uns64 tracker_before, uns victim, char action);
+static void mcache_bard_log_event(MCache *c, uns set, uns64 tracker_before, uns victim, char action, int cleanse);
 
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -125,6 +126,10 @@ Flag    mcache_mark_dirty    (MCache *c, Addr addr){
     MCache_Entry *entry = &c->entries[ii];
     if(entry->valid && (entry->tag == tag))
       {
+	if(entry->cleansed){
+	  c->s_cleanse_rewritten++;
+	  entry->cleansed = FALSE;
+	}
 	entry->dirty = TRUE;
 	return TRUE;
       }
@@ -147,7 +152,8 @@ void mcache_install (MCache *c, Addr addr){
   Flag update_lrubits=TRUE;
 
   c->evicted_dirty_line = FALSE;
-  
+  c->cleansed_line = FALSE;
+
   MCache_Entry *entry;
 
   for (ii=start; ii<end; ii++){
@@ -165,20 +171,29 @@ void mcache_install (MCache *c, Addr addr){
   if(entry->valid){
     uns   lru_victim = victim;
     uns64 tracker_before = c->bard_tracker;
+    int   cleanse = -1;   // line to write back and keep (BARD-C)
 
-    if(c->bard == BARD_E || c->bard == BARD_H){
+    if(entry->dirty && (c->bard == BARD_E || c->bard == BARD_H)){
       victim = mcache_bard_e(c, set, victim);
       entry = &c->entries[victim];
+    }else if(!entry->dirty && (c->bard == BARD_C || c->bard == BARD_H)){
+      cleanse = mcache_bard_c(c, set);
     }
 
     c->s_evict++;
-    if(victim == lru_victim){
-      c->s_lru_evict++;
-    }else{
+    char action;
+    if(victim != lru_victim){
       c->s_bard_override++;
+      action = 'E';
+    }else if(cleanse >= 0){
+      c->s_bard_cleanse++;
+      action = 'C';
+    }else{
+      c->s_lru_evict++;
+      action = 'L';
     }
     if(c->bard_log && c->bard_log_left){
-      mcache_bard_log_event(c, set, tracker_before, victim, victim == lru_victim ? 'L' : 'E');
+      mcache_bard_log_event(c, set, tracker_before, victim, action, cleanse);
     }
     if(entry->dirty){
       c->s_writeback++;
@@ -187,6 +202,14 @@ void mcache_install (MCache *c, Addr addr){
       if(c->bank_of){
 	mcache_bard_track_writeback(c, entry->bank);
       }
+    }
+    if(cleanse >= 0){
+      MCache_Entry *ce = &c->entries[cleanse];
+      ce->dirty = FALSE;
+      ce->cleansed = TRUE;
+      c->cleansed_line = TRUE;
+      c->cleansed_line_addr = ce->tag;
+      mcache_bard_track_writeback(c, ce->bank);
     }
   }
 
@@ -198,6 +221,7 @@ void mcache_install (MCache *c, Addr addr){
   entry->tag   = tag;
   entry->valid = TRUE;
   entry->dirty = FALSE;
+  entry->cleansed = FALSE;
   entry->ripctr  = ripctr_val;
   if(c->bank_of){
     entry->bank = c->bank_of(tag);
@@ -343,6 +367,8 @@ void  mcache_reset_stats(MCache *c){
   c->s_writeback = 0;
   c->s_lru_evict = 0;
   c->s_bard_override = 0;
+  c->s_bard_cleanse = 0;
+  c->s_cleanse_rewritten = 0;
   c->s_tracker_reset = 0;   // the BLP-Tracker's bits are cache state: kept
 }
 
@@ -361,6 +387,13 @@ void  mcache_print_stats(MCache *c, char *header){
   printf("\n%s_EVICTIONS    \t : %llu",  header,  c->s_evict);
   printf("\n%s_LRU_EVICTS   \t : %llu",  header,  c->s_lru_evict);
   printf("\n%s_BARD_OVERRIDES\t : %llu", header,  c->s_bard_override);
+  printf("\n%s_BARD_CLEANSES\t : %llu",  header,  c->s_bard_cleanse);
+  printf("\n%s_CLEANSED_REWRITTEN\t : %llu", header, c->s_cleanse_rewritten);
+  uns64 dirty = 0;  // dirty lines in the cache right now (not a counter)
+  for(uns64 ii = 0; ii < (uns64)c->sets * c->assocs; ii++){
+    dirty += c->entries[ii].valid && c->entries[ii].dirty;
+  }
+  printf("\n%s_DIRTY_LINES  \t : %llu",  header,  dirty);
   printf("\n%s_TRACKER_RESETS\t : %llu", header,  c->s_tracker_reset);
   printf("\n");
 }
@@ -443,11 +476,30 @@ static uns mcache_bard_e(MCache *c, uns set, uns victim){
 }
 
 ////////////////////////////////////////////////////////////
+// BARD-C: only when the LRU victim is clean (it is evicted as usual). Scan
+// the set from LRU to MRU for a dirty line whose bank has no pending
+// write; that line is written back and stays cached, clean. Returns its
+// line index, or -1 if there is none.
+////////////////////////////////////////////////////////////
+
+static int mcache_bard_c(MCache *c, uns set){
+  uns order[MCACHE_MAX_ASSOC];
+  mcache_lru_order(c, set, order);
+  for(uns ii = 0; ii < c->assocs; ii++){
+    MCache_Entry *e = &c->entries[order[ii]];
+    if(e->valid && e->dirty && !mcache_bard_pending(c, e->bank)){
+      return order[ii];
+    }
+  }
+  return -1;
+}
+
+////////////////////////////////////////////////////////////
 // -bardlog: one line per eviction (the first max_events), with the set as
 // it was before the decision, so SCRIPTS/check_bard.py can redo every
 // decision and the BLP-Tracker independently:
-//   <set> <tracker before, hex> <evicted way> <L|E>  then per way
-//   <last_access>,<dirty>,<line address>,<bank>
+//   <set> <tracker before, hex> <evicted way> <L|E|C> <cleansed way, -1 if none>
+//   then per way <last_access>,<dirty>,<line address>,<bank>
 ////////////////////////////////////////////////////////////
 
 void mcache_bard_log(MCache *c, const char *fname, uns64 max_events){
@@ -457,13 +509,14 @@ void mcache_bard_log(MCache *c, const char *fname, uns64 max_events){
     exit(-1);
   }
   c->bard_log_left = max_events;
-  fprintf(c->bard_log, "# bard %u assoc %u banks %u banks_per_subch %u\n",
-	  (uns)c->bard, c->assocs, c->bard_num_banks, c->bard_banks_per_subch);
+  fprintf(c->bard_log, "# bard %u assoc %u banks %u banks_per_subch %u sets %u\n",
+	  (uns)c->bard, c->assocs, c->bard_num_banks, c->bard_banks_per_subch, c->sets);
 }
 
-static void mcache_bard_log_event(MCache *c, uns set, uns64 tracker_before, uns victim, char action){
+static void mcache_bard_log_event(MCache *c, uns set, uns64 tracker_before, uns victim, char action, int cleanse){
   uns start = set * c->assocs;
-  fprintf(c->bard_log, "%u %016llx %u %c", set, tracker_before, victim - start, action);
+  fprintf(c->bard_log, "%u %016llx %u %c %d", set, tracker_before, victim - start, action,
+	  cleanse >= 0 ? (int)(cleanse - start) : -1);
   for(uns ii = start; ii < start + c->assocs; ii++){
     MCache_Entry *e = &c->entries[ii];
     fprintf(c->bard_log, " %llu,%u,%llu,%u", e->last_access, (uns)e->dirty, e->tag, e->bank);

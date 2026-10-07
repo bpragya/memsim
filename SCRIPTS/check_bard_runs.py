@@ -22,8 +22,9 @@ for path in sorted(glob.glob(os.path.join(root, '*', '*_warmup.txt'))):
         return vals(k)[0]
     n += 1
     probs = []
-    # every LLC writeback was accepted by DRAM or is still waiting
-    if not (one('L3CACHE_WRITEBACKS') == one('MEM_WB_SENT') == one('total_num_write_requests') + one('MEM_WBBUF_LEFT')):
+    # every LLC writeback (dirty evictions + BARD-C cleanses) was accepted by DRAM or is still waiting
+    llc_wb = one('L3CACHE_WRITEBACKS') + sum(vals('L3CACHE_BARD_CLEANSES'))
+    if not (llc_wb == one('MEM_WB_SENT') == one('total_num_write_requests') + one('MEM_WBBUF_LEFT')):
         probs.append('writebacks lost')
     if one('MEM_MSHR_MAX') > 128:
         probs.append('MSHR peak above 128')
