@@ -1,0 +1,10 @@
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh lbm_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/alone  -ratemode 1
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh fotonik3d_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/alone  -ratemode 1
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh lbm_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/baseline_wrq48  -bard 0
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh fotonik3d_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/baseline_wrq48  -bard 0
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh lbm_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/bardE_wrq48  -bard 1
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh fotonik3d_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/bardE_wrq48  -bard 1
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh lbm_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/bardC_wrq48  -bard 2
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh fotonik3d_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/bardC_wrq48  -bard 2
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh lbm_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/bardH_wrq48  -bard 3
+CONFIG=/mnt/c/Users/bprag/memsim/configs/bard_table2_wrq48.yaml bash /mnt/c/Users/bprag/memsim/SCRIPTS/run_bard.sh fotonik3d_17 /mnt/c/Users/bprag/memsim/output_bard/full_wrq48/bardH_wrq48  -bard 3

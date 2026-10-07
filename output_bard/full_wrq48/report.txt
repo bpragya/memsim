@@ -1,0 +1,27 @@
+Baseline, 48-entry write queue (output_bard/full_wrq48)
+workload        MPKI   WPKI    BLP  write%  WR->WR  WQ occ     WS   | paper:  MPKI  WPKI   BLP write%
+fotonik3d_17    25.4    8.1   23.9    30.1   4.96n    22.4   2.23   |         30.6   9.7  23.9   36.9
+lbm_17          28.2   21.2   24.1    50.9   4.92n    22.6   1.28   |         48.5  25.5  24.6   51.8
+mean            26.8   14.7   24.0    40.5   4.94n    22.5          |  paper avg (all 31 workloads): BLP 22.1, write% 33.0, WR->WR 5.0 ns
+n/a = undefined (no write drains, or no single-core run). Means are over workloads with a value: BLP 2 of 2, WR->WR 2 of 2, others 2.
+Note: WPKI counts LLC dirty evictions (L3CACHE_WRITEBACKS) only. BARD-C/H cleanses (L3CACHE_BARD_CLEANSES) are also DRAM writes but are not included in WPKI.
+
+BARD vs baseline, 48-entry write queue (speedup = WS / baseline WS - 1; evictions = LRU / BARD-E override / BARD-C cleanse, % of all evictions)
+workload      policy      MPKI   WPKI    BLP  write%  WR->WR     WS  speedup     LRU%     E%     C%
+fotonik3d_17  baseline    25.4    8.1   23.9    30.1   4.96n   2.23   0.00%    100.0    0.0    0.0
+              BARD-E      25.4    8.1   28.4    26.2   4.26n   2.33   4.53%     90.4    9.6    0.0
+              BARD-C      25.4    0.3   30.2    23.7   4.07n   2.33   4.55%     69.1    0.0   30.9
+              BARD-H      25.4    0.3   30.2    23.8   4.08n   2.34   4.58%     69.0    0.2   30.8
+lbm_17        baseline    28.2   21.2   24.1    50.9   4.92n   1.28   0.00%    100.0    0.0    0.0
+              BARD-E      28.3   21.3   30.6    43.7   4.05n   1.39   8.67%     68.3   31.7    0.0
+              BARD-C      28.2    2.0   30.9    42.7   4.00n   1.39   8.23%     30.8    0.0   69.2
+              BARD-H      28.2    2.2   31.1    42.4   3.99n   1.39   8.27%     28.6    3.1   68.3
+Note: WPKI counts dirty evictions only; BARD-C/H cleanses (C%) are DRAM writes too and are not in WPKI.
+
+summary       policy     gmean speedup  mean BLP  mean write%  mean WR->WR  max WR->WR   (over 2 workloads)
+              baseline          0.00%      24.0         40.5        4.94n       4.96n
+              BARD-E            6.58%      29.5         35.0        4.15n       4.26n
+              BARD-C            6.38%      30.6         33.2        4.04n       4.07n
+              BARD-H            6.41%      30.7         33.1        4.03n       4.08n
+paper (31 workloads; 'BARD' = BARD-H): gmean speedup BARD-E 4.1%, BARD-C 3.3%, BARD-H 4.3% (Fig. 10); BLP 22.1 -> 28.8, write% 33.0 -> 29.3 (Fig. 14);
+  WR->WR average 5.0 -> 4.2 ns, Table V 'max' 5.7 -> 5.0 ns; BARD-H evictions 64.7% LRU / 4.8% E / 30.5% C (Fig. 10).
