@@ -9,6 +9,7 @@ fotonik3d_17    25.4    7.7   23.9    29.0   4.96n    22.0   2.04   |         30
 lbm_17          33.6   24.2   24.0    50.2   4.94n    22.5   1.07   |         48.5  25.5  24.6   51.8
 mean            18.6    5.8   22.6    19.5   4.91n    15.4          |  paper avg (all 31 workloads): BLP 22.1, write% 33.0, WR->WR 5.0 ns
 n/a = undefined (no write drains, or no single-core run). Means are over workloads with a value: BLP 5 of 7, WR->WR 5 of 7, others 7.
+Note: WPKI counts LLC dirty evictions (L3CACHE_WRITEBACKS) only. BARD-C/H cleanses (L3CACHE_BARD_CLEANSES) are also DRAM writes but are not included in WPKI.
 
 Write-queue sweep: weighted speedup vs 48 entries (%)
 workload           32      48      64      96     128

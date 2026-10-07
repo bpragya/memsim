@@ -7,7 +7,9 @@ Reads <outroot>/baseline_wrq<N>/<trace>.txt (8 cores) and <outroot>/alone/
 come from <trace>_warmup.txt instead.
 
 Per workload (48-entry write queue):
-  MPKI, WPKI        LLC misses / writebacks per 1000 instructions (all cores)
+  MPKI, WPKI        LLC misses / writebacks per 1000 instructions (all cores);
+                    WPKI counts dirty evictions (L3CACHE_WRITEBACKS) only, not
+                    BARD-C/H cleanses (L3CACHE_BARD_CLEANSES), which are DRAM writes too
   write BLP         distinct banks written per write drain (max 32)
   write %           cycles in write mode with writes queued, % of all cycles
   WR->WR ns         mean gap between writes inside a drain (DRAM cycles x tCK)
@@ -135,6 +137,8 @@ if traces:
                f"          |  paper avg (all 31 workloads): BLP 22.1, write% 33.0, WR->WR 5.0 ns")
     out.append(f"n/a = undefined (no write drains, or no single-core run). Means are over workloads with a value: "
                f"BLP {cols['blp'][1]} of {len(traces)}, WR->WR {cols['w2w'][1]} of {len(traces)}, others {len(traces)}.")
+    out.append("Note: WPKI counts LLC dirty evictions (L3CACHE_WRITEBACKS) only. BARD-C/H cleanses "
+               "(L3CACHE_BARD_CLEANSES) are also DRAM writes but are not included in WPKI.")
 
 sizes = sorted(int(c[len('baseline_wrq'):]) for c in runs if c.startswith('baseline_wrq'))
 if 48 in sizes and alone:
