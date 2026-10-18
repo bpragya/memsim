@@ -47,6 +47,11 @@ Usage:
                                          The options above still override it.
     MEMSIM_WRQ_SIZE=<int>                table2 write-queue entries, default 48 (watermarks
                                          high = size-8, low = 8: drain at 40, stop at 8)
+    MEMSIM_CONTROLLER={generic,bankrr}   default generic (GenericDDR). bankrr: BankRR controller,
+                                         write drains go round robin over the banks
+                                         (bank groups interleaved, strict rotation); reads unchanged
+    MEMSIM_RR_LOG=<path>                 default off (bankrr only): log the first decisions to
+                                         <path>.ch0/.ch1 (for SCRIPTS/check_bankrr.py)
 
   Table II also needs memsim flags; see SCRIPTS/run_bard.sh:
     -ratemode 8 -l3sizemb 16 -l3assoc 16 -robsize 512 -llcmshrs 128
@@ -79,6 +84,10 @@ class Args:
     row_policy = os.environ.get("MEMSIM_ROW_POLICY",
                                 "closedcap" if closepage else ("adaptive" if table2 else "open"))
     addr_map = os.environ.get("MEMSIM_ADDR_MAP", "zen_pbpl" if table2 else "mop4clxor")
+    controller = os.environ.get("MEMSIM_CONTROLLER", "generic")
+    if controller not in ("generic", "bankrr"):
+        raise ValueError(f"MEMSIM_CONTROLLER must be generic or bankrr, not {controller}")
+    rr_log = os.environ.get("MEMSIM_RR_LOG", "")
 
 
 args = Args()
@@ -172,7 +181,12 @@ def make_controller():
     if args.drain_log:
         extra["drain_log"] = args.drain_log  # one CSV line per write drain, per channel
 
-    return ramulator.controller.GenericDDR(
+    controller = ramulator.controller.GenericDDR
+    if args.controller == "bankrr":
+        controller = ramulator.controller.BankRR  # round-robin write drains
+        if args.rr_log:
+            extra["rr_log"] = args.rr_log
+    return controller(
         dram=dram,
         scheduler=scheduler,
         refresh_manager=refresh_manager,
