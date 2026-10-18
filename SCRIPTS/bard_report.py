@@ -74,6 +74,9 @@ def run_stats(path):
         lru_ev=sum(values(t, 'L3CACHE_LRU_EVICTS')),
         overrides=sum(values(t, 'L3CACHE_BARD_OVERRIDES')),
         cleanses=sum(values(t, 'L3CACHE_BARD_CLEANSES')),
+        wlat_total=values(t, 'write_latency'),   # empty in runs made before these stats existed
+        wserved=sum(values(t, 'num_write_reqs_served')),
+        same_bg=values(t, 'drain_wr_same_bg'),
     )
     k = 1000.0 / s['inst'] if s['inst'] else 0
     s.update(
@@ -82,6 +85,10 @@ def run_stats(path):
         wpct=100.0 * s['wmode'] / s['cycles'] if s['cycles'] else 0,
         w2w=TCK_NS * s['gap_total'] / s['gaps'] if s['gaps'] else None,
         wqocc=sum(s['wq']) / len(s['wq']) if s['wq'] else 0,
+        # write latency: write-queue arrival to WR issue, mean over all writes (ns)
+        wlat=TCK_NS * sum(s['wlat_total']) / s['wserved'] if s['wlat_total'] and s['wserved'] else None,
+        # back-to-back WRs in a drain that share a bank group, % of WR->WR gaps
+        samebg=100.0 * sum(s['same_bg']) / s['gaps'] if s['same_bg'] and s['gaps'] else None,
     )
     return s
 
@@ -176,7 +183,7 @@ if base and len(pols) > 1:
     out.append('BARD vs baseline, 48-entry write queue (speedup = WS / baseline WS - 1; '
                'evictions = LRU / BARD-E override / BARD-C cleanse, % of all evictions)')
     out.append(f"{'workload':13} {'policy':9} {'MPKI':>6} {'WPKI':>6} {'BLP':>6} {'write%':>7} {'WR->WR':>7} "
-               f"{'WS':>6} {'speedup':>8}   {'LRU%':>6} {'E%':>6} {'C%':>6}")
+               f"{'WR lat':>8} {'sameBG%':>7} {'WS':>6} {'speedup':>8}   {'LRU%':>6} {'E%':>6} {'C%':>6}")
     speed = {k: [] for k, _ in pols}
     for t in traces:
         base_ws = ws(base[t], t)
@@ -193,12 +200,15 @@ if base and len(pols) > 1:
             ev = s['evictions']
             br = [100.0 * s[x] / ev if ev else None for x in ('lru_ev', 'overrides', 'cleanses')]
             out.append(f"{label:13} {name:9} {s['mpki']:6.1f} {s['wpki']:6.1f} {fmt(s['blp'], 6, 1)} {s['wpct']:7.1f} "
-                       f"{fmt(s['w2w'], 7, 2, 'n')} {fmt(w, 6, 2)} {fmt(100 * (r - 1) if r is not None else None, 7, 2, '%')}"
+                       f"{fmt(s['w2w'], 7, 2, 'n')} {fmt(s['wlat'], 8, 1, 'n')} {fmt(s['samebg'], 7, 2)} "
+                       f"{fmt(w, 6, 2)} {fmt(100 * (r - 1) if r is not None else None, 7, 2, '%')}"
                        f"   {fmt(br[0], 6, 1)} {fmt(br[1], 6, 1)} {fmt(br[2], 6, 1)}")
     out.append("Note: WPKI counts dirty evictions only; BARD-C/H cleanses (C%) are DRAM writes too and are not in WPKI.")
+    out.append("WR lat = mean time from a write entering the controller's write queue to its WR command (ns); "
+               "sameBG% = back-to-back WRs in a drain to the same bank group, % of WR->WR gaps (n/a: older runs).")
     out.append('')
     out.append(f"{'summary':13} {'policy':9} {'gmean speedup':>14} {'mean BLP':>9} {'mean write%':>12} "
-               f"{'mean WR->WR':>12} {'max WR->WR':>11}   (over {len(traces)} workloads)")
+               f"{'mean WR->WR':>12} {'max WR->WR':>11} {'mean WR lat':>12}   (over {len(traces)} workloads)")
     def avg(xs):
         """Mean over the defined values (None if there are none)."""
         xs = defined(xs)
@@ -209,7 +219,8 @@ if base and len(pols) > 1:
         w2ws = defined(s['w2w'] for s in ss)
         out.append(f"{'':13} {name:9} {fmt(100 * (g - 1) if g else None, 13, 2, '%')} "
                    f"{fmt(avg(s['blp'] for s in ss), 9, 1)} {fmt(avg(s['wpct'] for s in ss), 12, 1)} "
-                   f"{fmt(avg(w2ws), 12, 2, 'n')} {fmt(max(w2ws) if w2ws else None, 11, 2, 'n')}")
+                   f"{fmt(avg(w2ws), 12, 2, 'n')} {fmt(max(w2ws) if w2ws else None, 11, 2, 'n')} "
+                   f"{fmt(avg(s['wlat'] for s in ss), 12, 1, 'n')}")
     out.append("paper (31 workloads; 'BARD' = BARD-H): gmean speedup BARD-E 4.1%, BARD-C 3.3%, BARD-H 4.3% (Fig. 10); "
                "BLP 22.1 -> 28.8, write% 33.0 -> 29.3 (Fig. 14);")
     out.append("  WR->WR average 5.0 -> 4.2 ns, Table V 'max' 5.7 -> 5.0 ns; BARD-H evictions "
