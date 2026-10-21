@@ -1,4 +1,4 @@
-Baseline, 48-entry write queue (output/mc_2M_5M)
+Baseline, 48-entry write queue (output/mc_2M_5M) - 8 cores
 workload        MPKI   WPKI    BLP  write%  WR->WR  WQ occ     WS   | paper:  MPKI  WPKI   BLP write%
 fotonik3d_17    25.4    8.1   23.9    30.0   4.93n    22.5   1.76   |         30.6   9.7  23.9   36.9
 lbm_17          25.2   19.0   24.2    50.9   4.94n    22.5   1.16   |         48.5  25.5  24.6   51.8
