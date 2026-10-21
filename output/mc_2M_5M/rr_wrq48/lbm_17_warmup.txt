@@ -1,0 +1,342 @@
+MEMSIM WARMUP STATS: the first 2000000 instructions per core (4417923 cycles),
+excluded from the main results.
+
+
+------------------------------------
+------  MEMSIM.V1.1  ----------
+------------------------------------
+
+CORE_00_ID           	 :  0
+CORE_00_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_00_INST         	 : 2004621
+CORE_00_CYCLES       	 : 4417923
+CORE_00_ACCESS       	 : 85097
+CORE_00_MISS         	 : 52327
+CORE_00_QFULL        	 : 3880
+CORE_00_APKI         	 : 42.45
+CORE_00_MPKI         	 : 26.10
+CORE_00_MISSRATE     	 : 61.49
+CORE_00_AVGDELAY     	 : 824.27
+CORE_00_SLEEP_CYCLES 	 : 289914
+CORE_00_IPC          	 : 0.454
+
+CORE_01_ID           	 :  1
+CORE_01_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_01_INST         	 : 2010821
+CORE_01_CYCLES       	 : 4417923
+CORE_01_ACCESS       	 : 85348
+CORE_01_MISS         	 : 52481
+CORE_01_QFULL        	 : 3837
+CORE_01_APKI         	 : 42.44
+CORE_01_MPKI         	 : 26.10
+CORE_01_MISSRATE     	 : 61.49
+CORE_01_AVGDELAY     	 : 827.19
+CORE_01_SLEEP_CYCLES 	 : 284154
+CORE_01_IPC          	 : 0.455
+
+CORE_02_ID           	 :  2
+CORE_02_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_02_INST         	 : 2005180
+CORE_02_CYCLES       	 : 4417923
+CORE_02_ACCESS       	 : 85117
+CORE_02_MISS         	 : 52341
+CORE_02_QFULL        	 : 3876
+CORE_02_APKI         	 : 42.45
+CORE_02_MPKI         	 : 26.10
+CORE_02_MISSRATE     	 : 61.49
+CORE_02_AVGDELAY     	 : 829.58
+CORE_02_SLEEP_CYCLES 	 : 287387
+CORE_02_IPC          	 : 0.454
+
+CORE_03_ID           	 :  3
+CORE_03_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_03_INST         	 : 2017392
+CORE_03_CYCLES       	 : 4417923
+CORE_03_ACCESS       	 : 85612
+CORE_03_MISS         	 : 52641
+CORE_03_QFULL        	 : 3969
+CORE_03_APKI         	 : 42.44
+CORE_03_MPKI         	 : 26.09
+CORE_03_MISSRATE     	 : 61.49
+CORE_03_AVGDELAY     	 : 832.28
+CORE_03_SLEEP_CYCLES 	 : 289648
+CORE_03_IPC          	 : 0.457
+
+CORE_04_ID           	 :  4
+CORE_04_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_04_INST         	 : 2000002
+CORE_04_CYCLES       	 : 4417923
+CORE_04_ACCESS       	 : 84907
+CORE_04_MISS         	 : 52212
+CORE_04_QFULL        	 : 3905
+CORE_04_APKI         	 : 42.45
+CORE_04_MPKI         	 : 26.11
+CORE_04_MISSRATE     	 : 61.49
+CORE_04_AVGDELAY     	 : 819.77
+CORE_04_SLEEP_CYCLES 	 : 302943
+CORE_04_IPC          	 : 0.453
+
+CORE_05_ID           	 :  5
+CORE_05_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_05_INST         	 : 2002571
+CORE_05_CYCLES       	 : 4417923
+CORE_05_ACCESS       	 : 85015
+CORE_05_MISS         	 : 52278
+CORE_05_QFULL        	 : 3832
+CORE_05_APKI         	 : 42.45
+CORE_05_MPKI         	 : 26.11
+CORE_05_MISSRATE     	 : 61.49
+CORE_05_AVGDELAY     	 : 826.86
+CORE_05_SLEEP_CYCLES 	 : 291981
+CORE_05_IPC          	 : 0.453
+
+CORE_06_ID           	 :  6
+CORE_06_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_06_INST         	 : 2001704
+CORE_06_CYCLES       	 : 4417923
+CORE_06_ACCESS       	 : 84977
+CORE_06_MISS         	 : 52255
+CORE_06_QFULL        	 : 3836
+CORE_06_APKI         	 : 42.45
+CORE_06_MPKI         	 : 26.11
+CORE_06_MISSRATE     	 : 61.49
+CORE_06_AVGDELAY     	 : 830.07
+CORE_06_SLEEP_CYCLES 	 : 300117
+CORE_06_IPC          	 : 0.453
+
+CORE_07_ID           	 :  7
+CORE_07_TRACE        	 : TRACES/lbm_17.mtf.gz
+CORE_07_INST         	 : 2018971
+CORE_07_CYCLES       	 : 4417923
+CORE_07_ACCESS       	 : 85675
+CORE_07_MISS         	 : 52678
+CORE_07_QFULL        	 : 4041
+CORE_07_APKI         	 : 42.43
+CORE_07_MPKI         	 : 26.09
+CORE_07_MISSRATE     	 : 61.49
+CORE_07_AVGDELAY     	 : 828.48
+CORE_07_SLEEP_CYCLES 	 : 280698
+CORE_07_IPC          	 : 0.457
+
+L3CACHE_ACCESS       	 : 681748
+L3CACHE_MISS         	 : 419213
+L3CACHE_MISSRATE     	 : 61.491
+L3CACHE_WRITEBACKS   	 : 117860
+L3CACHE_BARD         	 : 0
+L3CACHE_EVICTIONS    	 : 157629
+L3CACHE_LRU_EVICTS   	 : 157629
+L3CACHE_BARD_OVERRIDES	 : 0
+L3CACHE_BARD_CLEANSES	 : 0
+L3CACHE_CLEANSED_REWRITTEN	 : 0
+L3CACHE_DIRTY_LINES  	 : 196101
+L3CACHE_TRACKER_RESETS	 : 0
+
+MEM_WB_SENT        	 : 117860
+MEM_WB_DELAYED     	 : 130
+MEM_WB_STALLS      	 : 0
+MEM_WBBUF_MAX      	 : 11
+MEM_WBBUF_LEFT     	 : 0
+MEM_MSHR_FULL      	 : 924971
+MEM_MSHR_MAX       	 : 128
+MEM_WAIT_TURN      	 : 1178344
+memory_system:
+  impl: GenericDRAM
+  total_num_read_requests: 419213
+  total_num_write_requests: 117860
+  channel_mapper:
+    impl: CacheLineInterleave
+
+
+  controller:
+    -
+      impl: BankRR
+      id: Channel 0
+      cycles: 2650753
+      row_hits: 8638
+      row_misses: 236916
+      row_conflicts: 22927
+      read_row_hits: 2439
+      read_row_misses: 186712
+      read_row_conflicts: 20426
+      write_row_hits: 6199
+      write_row_misses: 50204
+      write_row_conflicts: 2501
+      read_row_hits_core_0: 304
+      read_row_misses_core_0: 23287
+      read_row_conflicts_core_0: 2571
+      read_row_hits_core_1: 317
+      read_row_misses_core_1: 23237
+      read_row_conflicts_core_1: 2681
+      read_row_hits_core_2: 306
+      read_row_misses_core_2: 23373
+      read_row_conflicts_core_2: 2489
+      read_row_hits_core_3: 332
+      read_row_misses_core_3: 23438
+      read_row_conflicts_core_3: 2550
+      read_row_hits_core_4: 279
+      read_row_misses_core_4: 23284
+      read_row_conflicts_core_4: 2537
+      read_row_hits_core_5: 279
+      read_row_misses_core_5: 23294
+      read_row_conflicts_core_5: 2559
+      read_row_hits_core_6: 318
+      read_row_misses_core_6: 23313
+      read_row_conflicts_core_6: 2493
+      read_row_hits_core_7: 304
+      read_row_misses_core_7: 23486
+      read_row_conflicts_core_7: 2546
+      num_read_reqs: 209598
+      num_write_reqs: 58928
+      num_maintenance_reqs: 282
+      num_read_reqs_served: 209567
+      num_write_reqs_served: 58904
+      num_maintenance_reqs_served: 282
+      num_read_reqs_forwarded: 0
+      num_write_reqs_coalesced: 0
+      queue_len: 128577740
+      read_queue_len: 82906053
+      write_queue_len: 45629413
+      priority_queue_len: 42274
+      queue_len_avg: 48.5061
+      read_queue_len_avg: 31.2764
+      write_queue_len_avg: 17.2138
+      priority_queue_len_avg: 0.0159479
+      read_latency: 105291671
+      avg_read_latency: 502.425
+      write_latency: 49159996
+      avg_write_latency: 834.578
+      max_write_latency: 69057
+      read_throughput_MBps: 12163
+      write_throughput_MBps: 3418.71
+      total_throughput_MBps: 15581.7
+      write_drains: 1392
+      drain_writes: 56945
+      drain_banks_total: 32658
+      avg_write_blp: 23.4612
+      drain_wr2wr_gaps: 55553
+      drain_wr2wr_total: 683405
+      avg_drain_wr2wr_cycles: 12.3019
+      drain_wr_same_bg: 305
+      drain_wr_same_bank: 46
+      write_mode_cycles: 770531
+      write_mode_pct: 29.0684
+      rr_decisions: 741613
+      rr_no_ready: 631756
+      scheduler:
+        impl: FRFCFS
+
+      refresh_manager:
+        impl: AllBank
+
+
+      row_policy:
+        impl: AdaptiveOpen
+        rows_kept_open: 32231
+        rows_closed_rda: 184380
+        rows_closed_wra: 51860
+        auto_precharge_not_ready: 0
+
+      addr_mapper:
+        impl: ZenPBPL
+
+
+    -
+      impl: BankRR
+      id: Channel 1
+      cycles: 2650753
+      row_hits: 8715
+      row_misses: 237490
+      row_conflicts: 22302
+      read_row_hits: 2473
+      read_row_misses: 187081
+      read_row_conflicts: 20045
+      write_row_hits: 6242
+      write_row_misses: 50409
+      write_row_conflicts: 2257
+      read_row_hits_core_0: 303
+      read_row_misses_core_0: 23316
+      read_row_conflicts_core_0: 2546
+      read_row_hits_core_1: 329
+      read_row_misses_core_1: 23434
+      read_row_conflicts_core_1: 2473
+      read_row_hits_core_2: 272
+      read_row_misses_core_2: 23441
+      read_row_conflicts_core_2: 2459
+      read_row_hits_core_3: 334
+      read_row_misses_core_3: 23533
+      read_row_conflicts_core_3: 2454
+      read_row_hits_core_4: 293
+      read_row_misses_core_4: 23287
+      read_row_conflicts_core_4: 2526
+      read_row_hits_core_5: 295
+      read_row_misses_core_5: 23245
+      read_row_conflicts_core_5: 2597
+      read_row_hits_core_6: 302
+      read_row_misses_core_6: 23322
+      read_row_conflicts_core_6: 2502
+      read_row_hits_core_7: 345
+      read_row_misses_core_7: 23503
+      read_row_conflicts_core_7: 2488
+      num_read_reqs: 209615
+      num_write_reqs: 58932
+      num_maintenance_reqs: 282
+      num_read_reqs_served: 209592
+      num_write_reqs_served: 58908
+      num_maintenance_reqs_served: 282
+      num_read_reqs_forwarded: 0
+      num_write_reqs_coalesced: 0
+      queue_len: 126515793
+      read_queue_len: 80622065
+      write_queue_len: 45851349
+      priority_queue_len: 42379
+      queue_len_avg: 47.7282
+      read_queue_len_avg: 30.4148
+      write_queue_len_avg: 17.2975
+      priority_queue_len_avg: 0.0159875
+      read_latency: 103100637
+      avg_read_latency: 491.911
+      write_latency: 49344826
+      avg_write_latency: 837.659
+      max_write_latency: 51663
+      read_throughput_MBps: 12164.4
+      write_throughput_MBps: 3418.94
+      total_throughput_MBps: 15583.4
+      write_drains: 1347
+      drain_writes: 56307
+      drain_banks_total: 31858
+      avg_write_blp: 23.6511
+      drain_wr2wr_gaps: 54960
+      drain_wr2wr_total: 679217
+      avg_drain_wr2wr_cycles: 12.3584
+      drain_wr_same_bg: 269
+      drain_wr_same_bank: 49
+      write_mode_cycles: 766653
+      write_mode_pct: 28.9221
+      rr_decisions: 738063
+      rr_no_ready: 628312
+      scheduler:
+        impl: FRFCFS
+
+      refresh_manager:
+        impl: AllBank
+
+
+      row_policy:
+        impl: AdaptiveOpen
+        rows_kept_open: 31707
+        rows_closed_rda: 184986
+        rows_closed_wra: 51807
+        auto_precharge_not_ready: 0
+
+      addr_mapper:
+        impl: ZenPBPL
+
+
+
+
+OS_PAGE_MISS       	 : 6722
+
+SYS_CYCLES      	 : 4417923
+AVG_CORE_CYCLES 	 : 4417923
+
+

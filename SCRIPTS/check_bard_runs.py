@@ -5,7 +5,8 @@ usage: python3 SCRIPTS/check_bard_runs.py <outroot> [warmup_inst measured_inst]
 
 Checks every <outroot>/<set>/<trace>_warmup.txt and every finished full-run
 <outroot>/<set>/<trace>.txt (sets: baseline_wrqN, bardE_wrqN, bardC_wrqN,
-bardH_wrqN, alone = baseline single core, 48 entries):
+bardH_wrqN, alone = baseline single core, 48 entries; rr_wrq48, bardErr/bardCrr/bardHrr_wrq48
+= the same with the BankRR memory controller):
   - every LLC writeback (dirty evictions + BARD-C cleanses) reached DRAM or is
     still waiting
   - the MSHR peak is <= 128
@@ -13,7 +14,8 @@ bardH_wrqN, alone = baseline single core, 48 entries):
     measured_inst in the full-run file)
   - every write drain emptied the queue from N-8 down to 8 (>= N-16 writes)
   - write BLP <= 32 banks, mean WR-to-WR gap >= 8 cycles (tCCD_S_WR)
-  - the run used the BARD policy its set name says, and LRU evictions +
+  - the run used the BARD policy and the memory controller (GenericDDR or BankRR) its set
+    name says, and LRU evictions +
     BARD-E overrides + BARD-C cleanses = all evictions
 Warmup-only runs keep all their statistics in the warmup files.
 """
@@ -22,7 +24,8 @@ import glob, os, re, sys
 root = sys.argv[1]
 warm_inst = int(sys.argv[2]) if len(sys.argv) > 2 else 25_000_000
 meas_inst = int(sys.argv[3]) if len(sys.argv) > 3 else 100_000_000
-POLICY = {'baseline': 0, 'alone': 0, 'bardE': 1, 'bardC': 2, 'bardH': 3}
+POLICY = {'baseline': 0, 'alone': 0, 'bardE': 1, 'bardC': 2, 'bardH': 3,
+          'rr': 0, 'bardErr': 1, 'bardCrr': 2, 'bardHrr': 3}   # ...rr = BankRR memory controller
 
 fails = 0
 n = 0
@@ -66,6 +69,11 @@ for path in sorted(glob.glob(os.path.join(root, '*', '*.txt'))):
             probs.append('eviction breakdown does not sum to evictions')
     elif policy:
         probs.append('no BARD stats in a BARD run')
+    prefix = cfg.split('_')[0]
+    want = 'BankRR' if prefix in ('rr', 'bardErr', 'bardCrr', 'bardHrr') else 'GenericDDR'
+    impls = set(re.findall(r'^\s*impl:\s*(GenericDDR|BankRR)\s*$', t, re.M))
+    if impls != {want}:
+        probs.append(f'memory controller {sorted(impls)}, set name says {want}')
     if probs:
         fails += 1
         print(f'{cfg}/{os.path.basename(path)}: ' + '; '.join(sorted(set(probs))))

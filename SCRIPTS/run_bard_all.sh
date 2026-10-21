@@ -16,6 +16,9 @@
 # Environment (defaults = the full study):
 #   WORKLOADS  (7 SPEC traces)   WRQS ("32 48 64 96 128")   POLICIES ("1 2 3")
 #   BARDH_WRQS ("32 64 96 128")  JOBS (parallel runs, 8)  DRYRUN=1 (only list the runs)
+#   RR_POLICIES (""): BARD policies to also run with the BankRR memory controller at 48
+#                     entries (configs/bard_table2_wrq48_bankrr.yaml), sets rr_wrq48 (LRU),
+#                     bardErr_wrq48, bardCrr_wrq48, bardHrr_wrq48
 # e.g. WRQS=48 BARDH_WRQS= WORKLOADS="lbm_17 fotonik3d_17" for BARD at 48 entries only.
 set -e
 REPO=$(cd "$(dirname "$0")/.." && pwd)
@@ -24,6 +27,7 @@ WORKLOADS=${WORKLOADS:-"cam4_17 roms_17 omnetpp_17 bwaves_17 wrf_17 fotonik3d_17
 WRQS=${WRQS-"32 48 64 96 128"}
 POLICIES=${POLICIES-"1 2 3"}
 BARDH_WRQS=${BARDH_WRQS-"32 64 96 128"}
+RR_POLICIES=${RR_POLICIES-""}
 JOBS=${JOBS:-8}
 mkdir -p "$out"
 extra="$*"
@@ -45,6 +49,12 @@ for r in $runs; do
   p=${r%:*}; n=${r#*:}
   for t in $WORKLOADS; do
     echo "CONFIG=$REPO/configs/bard_table2_wrq$n.yaml bash $REPO/SCRIPTS/run_bard.sh $t $out/${names[$p]}_wrq$n $extra -bard $p" >> "$jobs_file"
+  done
+done
+rr_names=(rr bardErr bardCrr bardHrr)
+for p in $RR_POLICIES; do
+  for t in $WORKLOADS; do
+    echo "CONFIG=$REPO/configs/bard_table2_wrq48_bankrr.yaml bash $REPO/SCRIPTS/run_bard.sh $t $out/${rr_names[$p]}_wrq48 $extra -bard $p" >> "$jobs_file"
   done
 done
 

@@ -38,7 +38,9 @@ PAPER_T4 = {
     'lbm_17': (48.5, 25.5, 24.6, 51.8),
 }
 PAPER_FIG17 = {32: -6.2, 48: 0.0, 64: 3.3, 96: 8.1, 128: 10.7}  # baseline speedup %, all workloads
-POLICIES = [('baseline', 'baseline'), ('bardE', 'BARD-E'), ('bardC', 'BARD-C'), ('bardH', 'BARD-H')]  # run-set prefixes
+# run-set prefixes and labels; ...rr = same LLC policy with the BankRR memory controller
+POLICIES = [('baseline', 'baseline'), ('bardE', 'BARD-E'), ('bardC', 'BARD-C'), ('bardH', 'BARD-H'),
+            ('rr', 'BankRR'), ('bardErr', 'RR+BARD-E'), ('bardCrr', 'RR+BARD-C'), ('bardHrr', 'RR+BARD-H')]
 
 
 def stats_text(path):
@@ -180,10 +182,10 @@ if 48 in sizes and len(sizes) > 1 and alone:
 pols = [(k, name) for k, name in POLICIES if f'{k}_wrq48' in runs]
 if base and len(pols) > 1:
     out.append('')
-    out.append('BARD vs baseline, 48-entry write queue (speedup = WS / baseline WS - 1; '
-               'evictions = LRU / BARD-E override / BARD-C cleanse, % of all evictions)')
+    out.append('Policies vs baseline, 48-entry write queue (BankRR = round-robin memory controller; '
+               'speedup = WS / baseline WS - 1; evictions = LRU / BARD-E override / BARD-C cleanse, % of all evictions)')
     out.append(f"{'workload':13} {'policy':9} {'MPKI':>6} {'WPKI':>6} {'BLP':>6} {'write%':>7} {'WR->WR':>7} "
-               f"{'WR lat':>8} {'sameBG%':>7} {'WS':>6} {'speedup':>8}   {'LRU%':>6} {'E%':>6} {'C%':>6}")
+               f"{'WQ occ':>7} {'WR lat':>8} {'sameBG%':>7} {'WS':>6} {'speedup':>8}   {'LRU%':>6} {'E%':>6} {'C%':>6}")
     speed = {k: [] for k, _ in pols}
     for t in traces:
         base_ws = ws(base[t], t)
@@ -200,7 +202,7 @@ if base and len(pols) > 1:
             ev = s['evictions']
             br = [100.0 * s[x] / ev if ev else None for x in ('lru_ev', 'overrides', 'cleanses')]
             out.append(f"{label:13} {name:9} {s['mpki']:6.1f} {s['wpki']:6.1f} {fmt(s['blp'], 6, 1)} {s['wpct']:7.1f} "
-                       f"{fmt(s['w2w'], 7, 2, 'n')} {fmt(s['wlat'], 8, 1, 'n')} {fmt(s['samebg'], 7, 2)} "
+                       f"{fmt(s['w2w'], 7, 2, 'n')} {s['wqocc']:7.1f} {fmt(s['wlat'], 8, 1, 'n')} {fmt(s['samebg'], 7, 2)} "
                        f"{fmt(w, 6, 2)} {fmt(100 * (r - 1) if r is not None else None, 7, 2, '%')}"
                        f"   {fmt(br[0], 6, 1)} {fmt(br[1], 6, 1)} {fmt(br[2], 6, 1)}")
     out.append("Note: WPKI counts dirty evictions only; BARD-C/H cleanses (C%) are DRAM writes too and are not in WPKI.")
