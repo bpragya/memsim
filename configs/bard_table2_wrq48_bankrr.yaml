@@ -17,7 +17,8 @@ memory_system:
       priority_buffer_size: 1568
       drain_log: ""
       rr_log: ""
-      rr_log_decisions: 20000
+      rr_log_episodes: 200
+      repeat_min_banks: 0
       scheduler:
         impl: FRFCFS
       refresh_manager:
@@ -118,7 +119,8 @@ memory_system:
       priority_buffer_size: 1568
       drain_log: ""
       rr_log: ""
-      rr_log_decisions: 20000
+      rr_log_episodes: 200
+      repeat_min_banks: 0
       scheduler:
         impl: FRFCFS
       refresh_manager:

@@ -48,10 +48,14 @@ Usage:
     MEMSIM_WRQ_SIZE=<int>                table2 write-queue entries, default 48 (watermarks
                                          high = size-8, low = 8: drain at 40, stop at 8)
     MEMSIM_CONTROLLER={generic,bankrr}   default generic (GenericDDR). bankrr: BankRR controller,
-                                         write drains go round robin over the banks
-                                         (bank groups interleaved, strict rotation); reads unchanged
-    MEMSIM_RR_LOG=<path>                 default off (bankrr only): log the first decisions to
+                                         write episodes in phases (banks with 2+ writes, banks
+                                         with 1, then second writes, ...), each round robin over
+                                         bank-group-interleaved banks; reads unchanged
+    MEMSIM_RR_LOG=<path>                 default off (bankrr only): log the first 200 episodes to
                                          <path>.ch0/.ch1 (for SCRIPTS/check_bankrr.py)
+    MEMSIM_RR_REPEAT_MIN_BANKS=<int>     default 0 = from the DRAM timings (bankrr only): banks
+                                         needed to repeat the second-write phase for third,
+                                         fourth, ... writes
 
   Table II also needs memsim flags; see SCRIPTS/run_bard.sh:
     -ratemode 8 -l3sizemb 16 -l3assoc 16 -robsize 512 -llcmshrs 128
@@ -88,6 +92,7 @@ class Args:
     if controller not in ("generic", "bankrr"):
         raise ValueError(f"MEMSIM_CONTROLLER must be generic or bankrr, not {controller}")
     rr_log = os.environ.get("MEMSIM_RR_LOG", "")
+    rr_repeat_min_banks = int(os.environ.get("MEMSIM_RR_REPEAT_MIN_BANKS", "0"))
 
 
 args = Args()
@@ -183,9 +188,11 @@ def make_controller():
 
     controller = ramulator.controller.GenericDDR
     if args.controller == "bankrr":
-        controller = ramulator.controller.BankRR  # round-robin write drains
+        controller = ramulator.controller.BankRR  # phased round-robin write episodes
         if args.rr_log:
             extra["rr_log"] = args.rr_log
+        if args.rr_repeat_min_banks:
+            extra["repeat_min_banks"] = args.rr_repeat_min_banks
     return controller(
         dram=dram,
         scheduler=scheduler,
