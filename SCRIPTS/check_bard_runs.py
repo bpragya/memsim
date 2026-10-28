@@ -12,7 +12,10 @@ bardH_wrqN, alone = baseline single core, 48 entries; rr_wrq48, bardErr/bardCrr/
   - the MSHR peak is <= 128
   - every core ran its instructions (warmup_inst in the warmup file,
     measured_inst in the full-run file)
-  - every write drain emptied the queue from N-8 down to 8 (>= N-16 writes)
+  - every write drain emptied the queue from N-8 down to 8 (>= N-16 writes); GenericDDR
+    only, since BankRR ends its episodes after their last phase
+  - BankRR: no write out of turn, no phase bank without a write (rr_stray_writes,
+    rr_missing_heads = 0)
   - write BLP <= 32 banks, mean WR-to-WR gap >= 8 cycles (tCCD_S_WR)
   - the run used the BARD policy and the memory controller (GenericDDR or BankRR) its set
     name says, and LRU evictions +
@@ -52,9 +55,13 @@ for path in sorted(glob.glob(os.path.join(root, '*', '*.txt'))):
         probs.append(f'a core ran only {min(inst):.0f} instructions (< {need})')
     m = re.search(r'wrq(\d+)$', cfg)
     wrq = int(m.group(1)) if m else 48
+    prefix = cfg.split('_')[0]
+    want = 'BankRR' if prefix in ('rr', 'bardErr', 'bardCrr', 'bardHrr') else 'GenericDDR'
     for drains, writes, banks, gaps, gtot in zip(vals('write_drains'), vals('drain_writes'), vals('drain_banks_total'),
                                                  vals('drain_wr2wr_gaps'), vals('drain_wr2wr_total')):
-        if drains and writes < (wrq - 16) * drains:   # each drain moves the queue from N-8 down to 8
+        # GenericDDR drains the queue from N-8 down to 8; BankRR ends its episodes
+        # after their last phase, possibly above the low watermark, so not for BankRR
+        if want == 'GenericDDR' and drains and writes < (wrq - 16) * drains:
             probs.append(f'drains too short: {writes / drains:.1f} writes/drain < {wrq - 16}')
         if drains and banks / drains > 32:
             probs.append('BLP above 32')
@@ -69,8 +76,8 @@ for path in sorted(glob.glob(os.path.join(root, '*', '*.txt'))):
             probs.append('eviction breakdown does not sum to evictions')
     elif policy:
         probs.append('no BARD stats in a BARD run')
-    prefix = cfg.split('_')[0]
-    want = 'BankRR' if prefix in ('rr', 'bardErr', 'bardCrr', 'bardHrr') else 'GenericDDR'
+    if want == 'BankRR' and (sum(vals('rr_stray_writes')) or sum(vals('rr_missing_heads'))):
+        probs.append('BankRR wrote out of turn or lost a phase write')
     impls = set(re.findall(r'^\s*impl:\s*(GenericDDR|BankRR)\s*$', t, re.M))
     if impls != {want}:
         probs.append(f'memory controller {sorted(impls)}, set name says {want}')
