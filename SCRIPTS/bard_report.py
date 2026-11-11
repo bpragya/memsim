@@ -228,6 +228,53 @@ if base and len(pols) > 1:
     out.append("  WR->WR average 5.0 -> 4.2 ns, Table V 'max' 5.7 -> 5.0 ns; BARD-H evictions "
                "64.7% LRU / 4.8% E / 30.5% C (Fig. 10).")
 
+# Write-queue sweep for every configuration run at two or more sizes, normalized to the
+# baseline at 48 entries (as the paper's Fig. 17 normalizes to its baseline)
+swept = []
+for k, name in POLICIES:
+    ns = sorted(int(c.split('_wrq')[1]) for c in runs if re.fullmatch(rf'{k}_wrq\d+', c))
+    if len(ns) > 1:
+        swept.append((k, name, ns))
+if base and alone and swept:
+    all_sizes = sorted({n for _, _, ns in swept for n in ns})
+    out.append('')
+    out.append('Write-queue sweep, all configurations: speedup vs baseline at 48 entries (%) '
+               '= WS(config, N) / WS(baseline, 48) - 1; drain starts at N-8, stops at 8')
+    out.append(f"{'workload':13} {'config':9} " + ' '.join(f'{n:>8}' for n in all_sizes))
+    ratios = {(k, n): [] for k, _, ns in swept for n in ns}
+    for t in traces:
+        base_ws = ws(base[t], t)
+        for i, (k, name, ns) in enumerate(swept):
+            row = []
+            for n in all_sizes:
+                s = runs.get(f'{k}_wrq{n}', {}).get(t)
+                w = ws(s, t)
+                r = w / base_ws if w is not None and base_ws else None
+                if n in ns:
+                    ratios[(k, n)].append(r)
+                row.append(fmt(100 * (r - 1) if r is not None else None, 8, 2))
+            out.append(f"{t if i == 0 else '':13} {name:9} " + ' '.join(row))
+    for i, (k, name, ns) in enumerate(swept):
+        cells = []
+        for n in all_sizes:
+            g = gmean(defined(ratios.get((k, n), [])))
+            cells.append(fmt(100 * (g - 1) if g else None, 8, 2))
+        out.append(f"{'gmean' if i == 0 else '':13} {name:9} " + ' '.join(cells))
+    out.append('')
+    out.append(f'Write-queue sweep, write statistics per size (mean over {len(traces)} workloads)')
+    out.append(f"{'config':9} {'statistic':14} " + ' '.join(f'{n:>8}' for n in all_sizes))
+    stats = [('BLP', 'blp', 1, ''), ('write%', 'wpct', 1, ''), ('WR->WR', 'w2w', 2, 'n'),
+             ('WQ occ', 'wqocc', 1, ''), ('WR lat', 'wlat', 0, 'n')]
+    for k, name, ns in swept:
+        for j, (label, key, prec, unit) in enumerate(stats):
+            cells = []
+            for n in all_sizes:
+                vals = defined(runs.get(f'{k}_wrq{n}', {}).get(t, {}).get(key) for t in traces)
+                cells.append(fmt(sum(vals) / len(vals) if vals else None, 8, prec, unit))
+            out.append(f"{name if j == 0 else '':9} {label:14} " + ' '.join(cells))
+    out.append('WR lat = time a write waits in the controller (queue arrival to WR command); '
+               'WQ occ = mean writes in the queue.')
+
 text = '\n'.join(out)
 print(text)
 open(os.path.join(root, 'report.txt'), 'w').write(text + '\n')
