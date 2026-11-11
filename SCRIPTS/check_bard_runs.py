@@ -12,8 +12,7 @@ bardH_wrqN, alone = baseline single core, 48 entries; rr_wrq48, bardErr/bardCrr/
   - the MSHR peak is <= 128
   - every core ran its instructions (warmup_inst in the warmup file,
     measured_inst in the full-run file)
-  - every write drain emptied the queue from N-8 down to 8 (>= N-16 writes); GenericDDR
-    only, since BankRR ends its episodes after their last phase
+  - every write drain emptied the queue from N-8 down to 8 (>= N-16 writes)
   - BankRR: no write out of turn, no phase bank without a write (rr_stray_writes,
     rr_missing_heads = 0)
   - write BLP <= 32 banks, mean WR-to-WR gap >= 8 cycles (tCCD_S_WR)
@@ -59,9 +58,8 @@ for path in sorted(glob.glob(os.path.join(root, '*', '*.txt'))):
     want = 'BankRR' if prefix in ('rr', 'bardErr', 'bardCrr', 'bardHrr') else 'GenericDDR'
     for drains, writes, banks, gaps, gtot in zip(vals('write_drains'), vals('drain_writes'), vals('drain_banks_total'),
                                                  vals('drain_wr2wr_gaps'), vals('drain_wr2wr_total')):
-        # GenericDDR drains the queue from N-8 down to 8; BankRR ends its episodes
-        # after their last phase, possibly above the low watermark, so not for BankRR
-        if want == 'GenericDDR' and drains and writes < (wrq - 16) * drains:
+        # every drain (GenericDDR or BankRR) moves the queue from N-8 down to 8
+        if drains and writes < (wrq - 16) * drains:
             probs.append(f'drains too short: {writes / drains:.1f} writes/drain < {wrq - 16}')
         if drains and banks / drains > 32:
             probs.append('BLP above 32')

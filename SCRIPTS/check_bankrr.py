@@ -9,7 +9,8 @@ The log (Ramulator2 controller param rr_log, one file per sub-channel) has, per 
     O <clk> <pointer> <chosen pos> {pos,bank,kind,ready}...   phase A: prepare a phase-B write
     W <clk> <bank> <due>               a write was issued (1 = its turn, 2 = phase-B write
                                        forced out during A by a refresh)
-    X <clk> <write queue size>         episode end
+    X <clk> <write queue size> <reason>  episode end: P = all phases done, L = cut because the
+                                       queue reached the low watermark
 From each episode's snapshot alone, this script works out the phases that must follow and
 checks the rules:
   1. phases: A = banks with >= 2 writes, B = banks with 1 (minus any whose write a refresh
@@ -28,7 +29,10 @@ checks the rules:
      ready (a D line choosing -1 at the same clk), only for phase-B banks, and the first
      bank from the pointer whose next command is a PRE/ACT that may issue; the pointer does
      not move.
-  7. the episode ends right after its last phase.
+  7. writes stop only at the low watermark: an episode ends either right after its last
+     phase (P) -- and if the queue is still at or above the low watermark, a new episode
+     must start in the same cycle -- or cut short (L), only with the queue below the low
+     watermark.
 """
 import sys
 from collections import Counter
@@ -48,8 +52,10 @@ for path in sys.argv[1:]:
         head = f.readline().split()   # # bankrr-episodes banks <n> banks_per_group <b> repeat_min_banks <t>
         hdr = dict(zip(head[2::2], head[3::2]))
         n, bpg, threshold = int(hdr['banks']), int(hdr['banks_per_group']), int(hdr['repeat_min_banks'])
+        low_wm = float(hdr['low_watermark'])
         groups = n // bpg
         in_episode = False
+        chain_clk = None   # clk at which a new episode must start (queue still above the low watermark)
         counts, forced = {}, set()
         phase, todo = None, set()
         ptr_next = None
@@ -76,6 +82,11 @@ for path in sys.argv[1:]:
                 continue
             f_ = line.split()
             kind, clk = f_[0], int(f_[1])
+            if chain_clk is not None:
+                if kind != 'E' or clk != chain_clk:
+                    fail('end', f'clk {chain_clk}: phases done with the queue above the low watermark, '
+                                f'but no new episode started')
+                chain_clk = None
             if kind == 'E':
                 if in_episode:
                     fail('episode', f'clk {clk}: new episode before the previous one ended')
@@ -149,16 +160,27 @@ for path in sys.argv[1:]:
                 todo.discard(bank)
                 count['writes'] += 1
             elif kind == 'X':
-                if todo or next_phase(phase) is not None:
-                    fail('end', f'clk {clk}: episode ended with {len(todo)} banks unwritten or a phase still due')
+                size, reason = int(f_[2]), f_[3]
+                if reason == 'P':
+                    if todo or next_phase(phase) is not None:
+                        fail('end', f'clk {clk}: episode ended with {len(todo)} banks unwritten or a phase still due')
+                    if size >= low_wm:
+                        chain_clk = clk
+                    count['ended: phases done'] += 1
+                elif reason == 'L':
+                    if size >= low_wm:
+                        fail('end', f'clk {clk}: episode cut at the low watermark with {size} writes queued')
+                    count['ended: low watermark'] += 1
+                else:
+                    fail('end', f'clk {clk}: unknown episode end reason {reason}')
                 in_episode = False
-                count['queue at end'] += int(f_[2])
     complete = count['episodes'] - int(in_episode)
     print(f'{path}: {count["episodes"]} episodes ({complete} complete), {count["snapshot writes"]} snapshot writes, '
           f'{count["writes"]} issued; phases A {count["phase A"]}, B {count["phase B"]}, C {count["phase C"]}, '
           f'C repeats {count["phase C repeat"]}; {count["decisions"]} decisions, none ready {count["none ready"]}; '
           f'phase-B rows prepared during A {count["B rows prepared"]} (forced B writes {count["forced B writes"]}); '
-          f'mean write queue at episode end {count["queue at end"] / max(complete, 1):.1f}')
+          f'episodes ended: phases done {count["ended: phases done"]}, cut at the low watermark '
+          f'{count["ended: low watermark"]}')
     print('  mismatches: ' + ', '.join(f'{k} {bad[k]}' for k in
                                        ('episode', 'phases', 'strict', 'order', 'head', 'choice', 'pointer', 'prep',
                                         'writes', 'end')))
